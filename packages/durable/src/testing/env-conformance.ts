@@ -1,5 +1,5 @@
-import type { Context } from "@earendil-works/chord";
-import { BACKGROUND_CONTEXT, withAbortSignal } from "@earendil-works/chord/context";
+import type { Context } from "@no-mistakes/chord";
+import { BACKGROUND_CONTEXT, withAbortSignal } from "@no-mistakes/chord/context";
 import {
 	type ExecutionEnv,
 	type FileInfo,
@@ -319,16 +319,16 @@ export function createEnvConformance(options: EnvConformanceOptions): readonly E
 		}),
 
 		watchCase("watch keeps watching a path whose parent is renamed and recreated", async (env) => {
-			getOrThrow(await env.writeFile("proj/.pi/skills/x.md", "x", context));
-			await watching(env, [{ path: "proj/.pi/skills", recursive: true }], async ({ expectChange }) => {
-				await expectChange("proj/.pi/skills", async () => {
-					getOrThrow(await env.renameFile("proj/.pi", "proj/old", context));
+			getOrThrow(await env.writeFile("proj/.no-mistakes/skills/x.md", "x", context));
+			await watching(env, [{ path: "proj/.no-mistakes/skills", recursive: true }], async ({ expectChange }) => {
+				await expectChange("proj/.no-mistakes/skills", async () => {
+					getOrThrow(await env.renameFile("proj/.no-mistakes", "proj/old", context));
 				});
-				await expectChange("proj/.pi/skills/y.md", async () => {
-					getOrThrow(await env.writeFile("proj/.pi/skills/y.md", "y", context));
+				await expectChange("proj/.no-mistakes/skills/y.md", async () => {
+					getOrThrow(await env.writeFile("proj/.no-mistakes/skills/y.md", "y", context));
 				});
-				await expectChange("proj/.pi/skills/y.md", async () => {
-					getOrThrow(await env.writeFile("proj/.pi/skills/y.md", "yy", context));
+				await expectChange("proj/.no-mistakes/skills/y.md", async () => {
+					getOrThrow(await env.writeFile("proj/.no-mistakes/skills/y.md", "yy", context));
 				});
 			});
 		}),

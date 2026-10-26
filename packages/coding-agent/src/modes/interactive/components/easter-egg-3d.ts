@@ -11,21 +11,20 @@ import {
 	type TuiMouseEvent,
 	type TuiMouseEventResult,
 	visibleWidth,
-} from "@earendil-works/pi-tui";
+} from "@no-mistakes/tui";
 import { theme } from "../theme/theme.ts";
 import { ARMIN_HEIGHT, ARMIN_WIDTH, isArminPixel } from "./armin.ts";
 import { formatKeyText } from "./keybinding-hints.ts";
 
 /**
- * Fullscreen 3D easter eggs: the pi logo (header logo click) and Armin (/arminsayshi). Both are bitmaps built from
- * one block per pixel. The current screen dissolves into braille dust while the model spins in the center and its
- * blocks play a sliding puzzle. Leaving plays the same timeline backwards, so the screen reassembles.
+ * Fullscreen 3D easter egg: Armin (/arminsayshi). It is a bitmap built from one block per pixel. The current screen
+ * dissolves into braille dust while the model spins in the center and its blocks play a sliding puzzle. Leaving plays
+ * the same timeline backwards, so the screen reassembles.
  *
- * The pi logo lifts off the header, flies to the center, and grows; the dust spreads out from the header logo.
  * Armin grows out of a speck at the center; the dust spreads out from the center.
  *
  * The blocks are ray cast per braille dot. A braille cell holds 2x4 roughly square dots, so one pixel of a
- * half-block bitmap is exactly 2x2 dots, and the header logo (4x2 cells) is 8x8 dots when it lifts off.
+ * half-block bitmap is exactly 2x2 dots.
  */
 
 type Rgb = readonly [number, number, number];
@@ -95,18 +94,13 @@ interface Model {
 	widthShare: number;
 	/** Number of blocks the puzzle moves per step, given a random number from 0 to 1. */
 	puzzleMoves: (random: number) => number;
-	/**
-	 * Top-left cell of the model's half-block rendering on screen. The model lifts off from there and replaces it.
-	 * Undefined to grow out of the center.
-	 */
-	origin: { column: number; row: number } | undefined;
 }
 
 function createModel(
 	columns: number,
 	rows: number,
 	pixel: (column: number, row: number) => Rgb | undefined,
-	options: Pick<Model, "cameraDistance" | "widthShare" | "origin"> & {
+	options: Pick<Model, "cameraDistance" | "widthShare"> & {
 		puzzleMoves: (random: number, blockCount: number) => number;
 	},
 ): Model {
@@ -125,23 +119,7 @@ function createModel(
 		radius: Math.hypot(columns / 2, rows / 2, 1 + DEPTH / 2),
 		widthShare: options.widthShare,
 		puzzleMoves: (random) => options.puzzleMoves(random, blocks.length),
-		origin: options.origin,
 	};
-}
-
-const CORAL: Rgb = [228, 138, 122];
-const BLUE: Rgb = [79, 142, 179];
-const YELLOW: Rgb = [234, 182, 93];
-const PI_LOGO_PIXELS = ["ccc.", "b.c.", "bb.y", "b..y"];
-const PI_LOGO_COLORS: Record<string, Rgb> = { c: CORAL, b: BLUE, y: YELLOW };
-
-function piLogoModel(origin: { column: number; row: number }): Model {
-	return createModel(4, 4, (column, row) => PI_LOGO_COLORS[PI_LOGO_PIXELS[row]![column]!], {
-		cameraDistance: 10,
-		widthShare: 0.35,
-		puzzleMoves: (random) => (random < 0.4 ? 2 : 1),
-		origin,
-	});
 }
 
 function arminModel(color: Rgb): Model {
@@ -150,7 +128,6 @@ function arminModel(color: Rgb): Model {
 		cameraDistance: 80,
 		widthShare: 0.45,
 		puzzleMoves: (random, blockCount) => Math.round(blockCount * (0.03 + random * 0.04)),
-		origin: undefined,
 	});
 }
 
@@ -832,18 +809,13 @@ class BlockRaster {
 	}
 }
 
-/**
- * Which easter egg to play. The pi logo lifts off the header logo, whose top-left cell is at `column`, `row`.
- */
-export type EasterEgg3d = { kind: "pi-logo"; column: number; row: number } | { kind: "armin" };
-
 let playing = false;
 
 /**
  * Show the animation as a fullscreen overlay until it is dismissed. The overlay takes focus and mouse input and
  * returns focus when hidden, so the rest of the UI keeps running underneath untouched.
  */
-export async function playEasterEgg3d(tui: TUI, screen: readonly string[], egg: EasterEgg3d): Promise<void> {
+export async function playEasterEgg3d(tui: TUI, screen: readonly string[]): Promise<void> {
 	if (playing) return;
 	playing = true;
 	// Fading needs the terminal's actual default colors; the theme only knows its own.
@@ -859,8 +831,7 @@ export async function playEasterEgg3d(tui: TUI, screen: readonly string[], egg: 
 		playing = false;
 		return;
 	}
-	const model =
-		egg.kind === "armin" ? arminModel(toRgb(theme.colors.accent)) : piLogoModel({ column: egg.column, row: egg.row });
+	const model = arminModel(toRgb(theme.colors.accent));
 	const animation = new EasterEgg3dAnimation(tui, screen, model, colors, () => {
 		playing = false;
 		overlay.hide();
@@ -906,7 +877,7 @@ export class EasterEgg3dAnimation implements Component {
 		this.background = colors.background;
 		this.onDone = onDone;
 		this.timer = setInterval(() => {
-			// Also stop when no longer rendered, e.g. when pi hides all overlays on exit.
+			// Also stop when no longer rendered, e.g. when no-mistakes hides all overlays on exit.
 			if ((this.exit && this.exitProgress() >= 1) || performance.now() - this.lastRender > 1000) this.finish();
 			else this.tui.requestRender();
 		}, FRAME_MS);
@@ -1171,19 +1142,15 @@ export class EasterEgg3dAnimation implements Component {
 	}
 
 	private pose(width: number, height: number, progress: number, time: number): Pose {
-		const { columns, rows, cameraDistance, radius, widthShare, origin } = this.model;
+		const { cameraDistance, radius, widthShare } = this.model;
 		const reach = radius * (cameraDistance / (cameraDistance - radius));
-		// Lifting off, the front face must cover exactly the half-block cells (2x2 dots per pixel) despite the
-		// perspective.
-		const startScale = origin ? (2 * (cameraDistance - DEPTH / 2)) / cameraDistance : START_SCALE;
+		const startScale = START_SCALE;
 		const endScale = Math.max(startScale, Math.min(width * 2 * widthShare, (height * 4 - 8) * 0.48) / reach);
 		const endX = width;
 		const endY = height * 2 - 2;
-		const startX = origin ? origin.column * 2 + columns : endX;
-		const startY = origin ? origin.row * 4 + rows : endY;
 		return {
-			centerX: startX + (endX - startX) * progress,
-			centerY: startY + (endY - startY) * progress,
+			centerX: endX,
+			centerY: endY,
 			// Interpolate the zoom geometrically so it feels uniform.
 			scale: startScale * (endScale / startScale) ** progress,
 			yaw: spinAngle(time),
@@ -1233,10 +1200,9 @@ export class EasterEgg3dAnimation implements Component {
 	private prepareCells(width: number, foreground: Rgb): ScreenCell[][] {
 		const cells = parseScreen(this.screen, width, foreground, this.background);
 		const height = Math.max(1, this.tui.terminal.rows);
-		const { columns, rows, origin } = this.model;
-		// The dust spreads out from where the model starts.
-		const centerX = origin ? origin.column + columns / 2 : width / 2;
-		const centerY = origin ? origin.row + rows / 4 : height / 2;
+		// The dust spreads out from the center where the model grows.
+		const centerX = width / 2;
+		const centerY = height / 2;
 		const farthest = Math.hypot(Math.max(centerX, width - centerX), Math.max(centerY, height - centerY) * 2);
 		for (let row = 0; row < cells.length; row++) {
 			const line = cells[row]!;
@@ -1253,22 +1219,6 @@ export class EasterEgg3dAnimation implements Component {
 				}
 				cell.seed = row * 65_537 + column;
 				cell.ink = glyphInk(owner.text, seed);
-			}
-		}
-		// The 3D model replaces its half-block rendering on screen.
-		if (origin) {
-			for (let row = origin.row; row < origin.row + Math.ceil(rows / 2); row++) {
-				const line = cells[row];
-				if (!line) continue;
-				for (let column = origin.column; column < origin.column + columns; column++) {
-					const cell = line[column];
-					if (cell) {
-						cell.text = " ";
-						cell.width = 1;
-						cell.ink = 0;
-						cell.bg = undefined;
-					}
-				}
 			}
 		}
 		return cells;

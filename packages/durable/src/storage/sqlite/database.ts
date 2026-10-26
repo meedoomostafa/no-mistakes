@@ -1,1 +1,1 @@
-export type { SqliteDatabase, SqliteExecutor, SqliteValue } from "@earendil-works/chord/sqlite";
+export type { SqliteDatabase, SqliteExecutor, SqliteValue } from "@no-mistakes/chord/sqlite";

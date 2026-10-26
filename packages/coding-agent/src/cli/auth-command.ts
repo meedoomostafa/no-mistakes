@@ -1,12 +1,13 @@
-import type { AuthResult } from "@earendil-works/pi-ai";
-import { APP_NAME } from "../config.ts";
+import type { AuthResult } from "@no-mistakes/ai";
+import { APP_NAME, CONFIG_DIR_NAME, ENV_AGENT_DIR } from "../config.ts";
 import type { Args } from "./args.ts";
 
-export type AuthCommandKind = "check" | "api_key" | "bearer_token";
+export type AuthCommandKind = "login" | "check" | "api_key" | "bearer_token";
 
 export interface AuthCommand {
 	kind: AuthCommandKind;
 	args: string[];
+	provider?: string;
 	json: boolean;
 	credentials: boolean;
 	noRefresh: boolean;
@@ -16,12 +17,14 @@ export interface AuthCommand {
 export class AuthCommandError extends Error {}
 
 const AUTH_COMMAND_USAGE: Record<AuthCommandKind, string> = {
+	login: `${APP_NAME} auth login [provider]`,
 	check: `${APP_NAME} auth check --provider <provider> [--json] [--credentials] [--no-refresh]`,
 	api_key: `${APP_NAME} auth print-api-key --provider <provider> [--model <model>]`,
 	bearer_token: `${APP_NAME} auth print-bearer-token --provider <provider> [--model <model>] [--min-expiry <duration>]`,
 };
 
 export function getAuthCommandName(kind: AuthCommandKind): string {
+	if (kind === "login") return "auth login";
 	return kind === "check" ? "auth check" : kind === "api_key" ? "auth print-api-key" : "auth print-bearer-token";
 }
 
@@ -37,16 +40,44 @@ export function isAuthCommandHelp(args: string[]): boolean {
 }
 
 export function printAuthCommandHelp(): void {
-	console.log(`Usage:
-  pi auth print-api-key [--provider <provider>] [--model <model>]
-  pi auth print-bearer-token [--provider <provider>] [--model <model>] [--min-expiry <duration>]
-  pi auth check [--provider <provider>] [--model <model>] [--json] [--credentials] [--no-refresh]
+	console.log(`${APP_NAME} auth — Connect and check LLM providers.
 
-Auth commands require at least one of --provider or --model. Checks refresh expired OAuth credentials by default; --no-refresh prevents this. --credentials emits the credential, or includes it in JSON output.`);
+Authentication & providers:
+  Run ${APP_NAME} auth login to choose a provider and sign in or enter an API key.
+  Login saves credentials; you do not need to export environment variables.
+  Saved credentials: ~/${CONFIG_DIR_NAME}/agent/auth.json (or set ${ENV_AGENT_DIR}).
+  Existing provider environment variables are also supported.
+
+Quick start:
+  ${APP_NAME} auth login                      Choose a provider interactively
+  ${APP_NAME} auth login anthropic            Connect a specific provider
+  ${APP_NAME} auth check --provider anthropic  Check saved or environment credentials
+
+Commands:
+  ${APP_NAME} auth login [provider]
+  ${APP_NAME} auth print-api-key [--provider <provider>] [--model <model>]
+  ${APP_NAME} auth print-bearer-token [--provider <provider>] [--model <model>] [--min-expiry <duration>]
+  ${APP_NAME} auth check [--provider <provider>] [--model <model>] [--json] [--credentials] [--no-refresh]
+
+Credential checks require at least one of --provider or --model. Checks refresh expired OAuth credentials by default; --no-refresh prevents this. --credentials emits the credential, or includes it in JSON output.`);
 }
 
 export function parseAuthCommand(args: string[]): AuthCommand | undefined {
 	if (args[0] !== "auth") return undefined;
+
+	if (args[1] === "login") {
+		if (args.length > 3) throw new AuthCommandError("auth login accepts at most one provider");
+		const provider = args[2]?.trim();
+		if (provider?.startsWith("-")) throw new AuthCommandError("auth login accepts a provider name, not options");
+		return {
+			kind: "login",
+			args: [],
+			...(provider ? { provider } : {}),
+			json: false,
+			credentials: false,
+			noRefresh: false,
+		};
+	}
 
 	const kind =
 		args[1] === "check"
@@ -58,7 +89,7 @@ export function parseAuthCommand(args: string[]): AuthCommand | undefined {
 					: undefined;
 	if (!kind) {
 		throw new AuthCommandError(
-			`Unknown auth command "${args[1] ?? ""}". Use "${APP_NAME} auth print-api-key", "${APP_NAME} auth print-bearer-token", or "${APP_NAME} auth check".`,
+			`Unknown auth command "${args[1] ?? ""}". Use "${APP_NAME} auth login", "${APP_NAME} auth print-api-key", "${APP_NAME} auth print-bearer-token", or "${APP_NAME} auth check".`,
 		);
 	}
 

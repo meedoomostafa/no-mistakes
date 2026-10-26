@@ -1,14 +1,14 @@
 /** Immutable, credential-blind models.json snapshot. */
 
 import { readFile } from "node:fs/promises";
-import { ProviderCompatSchema } from "@earendil-works/pi-ai/providers/compat-schema";
+import { ProviderCompatSchema } from "@no-mistakes/ai/providers/compat-schema";
 import {
 	ModelCostSchema,
 	ModelInputLimitsSchema,
 	ModelInputModalitySchema,
 	ModelPromptCacheSchema,
 	ThinkingLevelMapSchema,
-} from "@earendil-works/pi-ai/providers/model-schema";
+} from "@no-mistakes/ai/providers/model-schema";
 import { type Static, Type } from "typebox";
 import { Compile } from "typebox/compile";
 import type { TLocalizedValidationError } from "typebox/error";

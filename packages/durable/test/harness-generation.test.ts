@@ -3,10 +3,10 @@ import {
 	fauxAssistantMessage,
 	type Message,
 	type Models,
-	PI_ATTRIBUTION,
+	NO_MISTAKES_ATTRIBUTION,
 	type SimpleStreamOptions,
 	type SystemMessage,
-} from "@earendil-works/pi-ai";
+} from "@no-mistakes/ai";
 import {
 	AssistantEntry,
 	type Conversation,
@@ -24,7 +24,7 @@ import {
 	type TaskId,
 	UserEntry,
 	wrapSection,
-} from "@earendil-works/pi-durable";
+} from "@no-mistakes/durable";
 import { describe, expect, it } from "vitest";
 import { resolveSettings } from "../src/harness/agent.ts";
 import type { SessionImpl } from "../src/session/session.ts";
@@ -401,7 +401,7 @@ describe("generation", () => {
 			await (await root.submit({ type: "input", content: "hi" }, context)).wait(context);
 			await harness.close(context);
 		}
-		expect(seen).toEqual([{ attribution: PI_ATTRIBUTION }, { attribution: acme, userAgent: "short" }]);
+		expect(seen).toEqual([{ attribution: NO_MISTAKES_ATTRIBUTION }, { attribution: acme, userAgent: "short" }]);
 	});
 
 	// Regression coverage for #10424.

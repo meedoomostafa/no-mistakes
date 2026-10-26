@@ -1,12 +1,13 @@
 {
-	"name": "@earendil-works/pi-telemetry",
+	"name": "@no-mistakes/telemetry",
 	"version": "1.4.0",
-	"description": "Vendor-neutral telemetry contracts and typed schema utilities for pi",
+	"description": "Vendor-neutral telemetry contracts and typed schema utilities for no-mistakes",
 	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
+			"source": "./src/index.ts",
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js"
 		},
@@ -16,6 +17,7 @@
 			"import": "./dist/render.js"
 		},
 		"./testing": {
+			"source": "./src/testing/index.ts",
 			"types": "./dist/testing/index.d.ts",
 			"import": "./dist/testing/index.js"
 		}
@@ -39,7 +41,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/earendil-works/pi.git",
+		"url": "git+https://github.com/meedoomostafa/no-mistakes.git",
 		"directory": "packages/telemetry"
 	},
 	"engines": {

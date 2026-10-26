@@ -1,8 +1,8 @@
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { resolve } from "node:path";
-import { DynamicBorder, type ExtensionAPI, type ExtensionContext } from "@earendil-works/pi-coding-agent";
-import { Container, hyperlink, Text } from "@earendil-works/pi-tui";
+import { DynamicBorder, type ExtensionAPI, type ExtensionContext } from "@no-mistakes/coding-agent";
+import { Container, hyperlink, Text } from "@no-mistakes/tui";
 
 const PR_PROMPT_PATTERN = /^\s*You are given one or more GitHub PR URLs:\s*(\S+)/im;
 const ISSUE_PROMPT_PATTERN = /^\s*Analyze GitHub issue\(s\):\s*(\S+)/im;
@@ -114,12 +114,12 @@ function formatAdvisoryDetail(advisory: GitHubAdvisoryMetadata): string | undefi
 	return parts.length > 0 ? parts.join(" · ") : undefined;
 }
 
-async function fetchAdvisoryMetadata(pi: ExtensionAPI, cwd: string, target: string): Promise<GhMetadata | undefined> {
+async function fetchAdvisoryMetadata(api: ExtensionAPI, cwd: string, target: string): Promise<GhMetadata | undefined> {
 	const advisoryRef = parseAdvisoryUrl(target) ?? (await readAdvisoryRefFromDraft(cwd, target));
 	if (!advisoryRef) return undefined;
 
 	try {
-		const result = await pi.exec("gh", [
+		const result = await api.exec("gh", [
 			"api",
 			`repos/${advisoryRef.owner}/${advisoryRef.repo}/security-advisories/${advisoryRef.ghsaId}`,
 		]);
@@ -135,14 +135,13 @@ async function fetchAdvisoryMetadata(pi: ExtensionAPI, cwd: string, target: stri
 	}
 }
 
-async function fetchGhMetadata(
-	pi: ExtensionAPI,
+async function fetchGhMetadata(api: ExtensionAPI,
 	kind: PromptMatch["kind"],
 	target: string,
 	cwd: string,
 ): Promise<GhMetadata | undefined> {
 	if (kind === "advisory") {
-		return fetchAdvisoryMetadata(pi, cwd, target);
+		return fetchAdvisoryMetadata(api) cwd, target);
 	}
 
 	const args =
@@ -151,7 +150,7 @@ async function fetchGhMetadata(
 			: ["issue", "view", target, "--json", "title,author"];
 
 	try {
-		const result = await pi.exec("gh", args);
+		const result = await api.exec("gh", args);
 		if (result.code !== 0 || !result.stdout) return undefined;
 		return JSON.parse(result.stdout) as GhMetadata;
 	} catch {
@@ -169,7 +168,7 @@ function formatAuthor(author?: GhMetadata["author"]): string | undefined {
 	return undefined;
 }
 
-export default function promptUrlWidgetExtension(pi: ExtensionAPI) {
+export default function promptUrlWidgetExtension(api: ExtensionAPI) {
 	const setWidget = (ctx: ExtensionContext, match: PromptMatch, metadata?: GhMetadata) => {
 		ctx.ui.setWidget("prompt-url", (_tui, thm) => {
 			const displayTarget = metadata?.displayUrl ?? match.target;
@@ -198,26 +197,26 @@ export default function promptUrlWidgetExtension(pi: ExtensionAPI) {
 		const fallbackName = `${label}: ${match.target}`;
 		const desiredFallbackName = `${label}: ${displayTarget}`;
 		const desiredName = trimmedTitle ? `${label}: ${trimmedTitle} (${displayTarget})` : desiredFallbackName;
-		const currentName = pi.getSessionName()?.trim();
+		const currentName = api.getSessionName()?.trim();
 		if (!currentName) {
-			pi.setSessionName(desiredName);
+			api.setSessionName(desiredName);
 			return;
 		}
 		if (currentName === match.target || currentName === fallbackName || currentName === desiredFallbackName) {
-			pi.setSessionName(desiredName);
+			api.setSessionName(desiredName);
 		}
 	};
 
 	const updatePromptContext = (ctx: ExtensionContext, match: PromptMatch) => {
 		setWidget(ctx, match);
 		applySessionName(ctx, match);
-		void fetchGhMetadata(pi, match.kind, match.target, ctx.cwd).then((meta) => {
+		void fetchGhMetadata(api) match.kind, match.target, ctx.cwd).then((meta) => {
 			setWidget(ctx, match, meta);
 			applySessionName(ctx, match, meta);
 		});
 	};
 
-	pi.on("before_agent_start", async (event, ctx) => {
+	api.on("before_agent_start", async (event, ctx) => {
 		if (!ctx.hasUI) return;
 		const match = extractPromptMatch(event.prompt);
 		if (!match) {
@@ -227,7 +226,7 @@ export default function promptUrlWidgetExtension(pi: ExtensionAPI) {
 		updatePromptContext(ctx, match);
 	});
 
-	pi.on("session_switch", async (_event, ctx) => {
+	api.on("session_switch", async (_event, ctx) => {
 		rebuildFromSession(ctx);
 	});
 
@@ -264,7 +263,7 @@ export default function promptUrlWidgetExtension(pi: ExtensionAPI) {
 		updatePromptContext(ctx, match);
 	};
 
-	pi.on("session_start", async (_event, ctx) => {
+	api.on("session_start", async (_event, ctx) => {
 		rebuildFromSession(ctx);
 	});
 }

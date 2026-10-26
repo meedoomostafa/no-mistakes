@@ -9,11 +9,11 @@ import {
 	getAttributionHeaders,
 	getIdentityHeaders,
 	mergeClientIdentity,
-	PI_ATTRIBUTION,
+	NO_MISTAKES_ATTRIBUTION,
 	withClientIdentity,
 } from "../src/utils/identity.ts";
 import { normalizeContext } from "../src/utils/transcript.ts";
-import { PI_AI_VERSION } from "../src/utils/version.ts";
+import { NO_MISTAKES_AI_VERSION } from "../src/utils/version.ts";
 
 const ACME = { name: "acme", url: "https://acme.example" };
 
@@ -68,13 +68,17 @@ const context = normalizeContext({ messages: [{ role: "user", content: "hello", 
 describe("client identity", () => {
 	it("keeps the version constant in sync with package.json", () => {
 		const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")) as { version: string };
-		expect(PI_AI_VERSION).toBe(pkg.version);
+		expect(NO_MISTAKES_AI_VERSION).toBe(pkg.version);
 	});
 
 	it("formats user agents", () => {
-		expect(formatUserAgent()).toBe(`pi/${PI_AI_VERSION} (${process.platform}; ${runtime}; ${process.arch})`);
-		expect(formatUserAgent({ version: "9.9.9" })).toBe(`pi/9.9.9 (${process.platform}; ${runtime}; ${process.arch})`);
-		expect(formatUserAgent({ userAgent: "short", version: "9.9.9" })).toBe("pi");
+		expect(formatUserAgent()).toBe(
+			`no-mistakes/${NO_MISTAKES_AI_VERSION} (${process.platform}; ${runtime}; ${process.arch})`,
+		);
+		expect(formatUserAgent({ version: "9.9.9" })).toBe(
+			`no-mistakes/9.9.9 (${process.platform}; ${runtime}; ${process.arch})`,
+		);
+		expect(formatUserAgent({ userAgent: "short", version: "9.9.9" })).toBe("no-mistakes");
 		expect(formatUserAgent({ userAgent: { custom: "acme/1.0" } })).toBe("acme/1.0");
 	});
 
@@ -82,11 +86,11 @@ describe("client identity", () => {
 		expect(mergeClientIdentity(undefined, undefined)).toBeUndefined();
 		expect(
 			mergeClientIdentity(
-				{ attribution: PI_ATTRIBUTION, userAgent: "short" },
+				{ attribution: NO_MISTAKES_ATTRIBUTION, userAgent: "short" },
 				{ attribution: undefined, version: "1.0.0" },
 			),
-		).toEqual({ attribution: PI_ATTRIBUTION, userAgent: "short", version: "1.0.0" });
-		expect(mergeClientIdentity({ attribution: PI_ATTRIBUTION }, { attribution: null })).toEqual({
+		).toEqual({ attribution: NO_MISTAKES_ATTRIBUTION, userAgent: "short", version: "1.0.0" });
+		expect(mergeClientIdentity({ attribution: NO_MISTAKES_ATTRIBUTION }, { attribution: null })).toEqual({
 			attribution: null,
 		});
 	});
@@ -100,9 +104,9 @@ describe("client identity", () => {
 
 	it("attributes OpenRouter requests", () => {
 		const openRouter = target("openrouter", "https://openrouter.ai/api/v1");
-		expect(getAttributionHeaders(openRouter, { attribution: PI_ATTRIBUTION })).toEqual({
-			"HTTP-Referer": "https://pi.dev",
-			"X-OpenRouter-Title": "pi",
+		expect(getAttributionHeaders(openRouter, { attribution: NO_MISTAKES_ATTRIBUTION })).toEqual({
+			"HTTP-Referer": "https://github.com/meedoomostafa/no-mistakes",
+			"X-OpenRouter-Title": "no-mistakes",
 			"X-OpenRouter-Categories": "cli-agent",
 		});
 		expect(
@@ -120,23 +124,25 @@ describe("client identity", () => {
 		});
 		// Custom providers routed through OpenRouter, including legacy base URLs that are not valid URLs.
 		expect(
-			getAttributionHeaders(target("custom", "not-a-url-openrouter.ai"), { attribution: PI_ATTRIBUTION }),
-		).toMatchObject({ "X-OpenRouter-Title": "pi" });
+			getAttributionHeaders(target("custom", "not-a-url-openrouter.ai"), { attribution: NO_MISTAKES_ATTRIBUTION }),
+		).toMatchObject({ "X-OpenRouter-Title": "no-mistakes" });
 	});
 
 	it("attributes NVIDIA NIM requests with a capitalized name and OpenCode requests with the name", () => {
 		expect(
-			getAttributionHeaders(target("nvidia", "https://example.test/v1"), { attribution: PI_ATTRIBUTION }),
+			getAttributionHeaders(target("nvidia", "https://example.test/v1"), { attribution: NO_MISTAKES_ATTRIBUTION }),
 		).toEqual({
-			"X-BILLING-INVOKE-ORIGIN": "Pi",
+			"X-BILLING-INVOKE-ORIGIN": "No-mistakes",
 		});
 		expect(
 			getAttributionHeaders(target("custom-nim", "https://integrate.api.nvidia.com/v1"), { attribution: ACME }),
 		).toEqual({ "X-BILLING-INVOKE-ORIGIN": "Acme" });
 		expect(
-			getAttributionHeaders(target("opencode", "https://opencode.ai/zen/v1"), { attribution: PI_ATTRIBUTION }),
+			getAttributionHeaders(target("opencode", "https://opencode.ai/zen/v1"), {
+				attribution: NO_MISTAKES_ATTRIBUTION,
+			}),
 		).toEqual({
-			"x-opencode-client": "pi",
+			"x-opencode-client": "no-mistakes",
 		});
 		expect(getAttributionHeaders(target("custom", "https://opencode.ai/zen/v1"), { attribution: ACME })).toEqual({
 			"x-opencode-client": "acme",
@@ -145,11 +151,13 @@ describe("client identity", () => {
 
 	it("does not attribute NVIDIA models routed through gateways to NVIDIA", () => {
 		expect(
-			getAttributionHeaders(target("openrouter", "https://openrouter.ai/api/v1"), { attribution: PI_ATTRIBUTION }),
+			getAttributionHeaders(target("openrouter", "https://openrouter.ai/api/v1"), {
+				attribution: NO_MISTAKES_ATTRIBUTION,
+			}),
 		).not.toHaveProperty("X-BILLING-INVOKE-ORIGIN");
 		expect(
 			getAttributionHeaders(target("vercel-ai-gateway", "https://ai-gateway.vercel.sh/v1"), {
-				attribution: PI_ATTRIBUTION,
+				attribution: NO_MISTAKES_ATTRIBUTION,
 			}),
 		).toEqual({});
 	});
@@ -164,12 +172,12 @@ describe("client identity in requests", () => {
 		await streamCompletions(model, context, {
 			apiKey: "key",
 			fetch: capture.fetch,
-			identity: { attribution: PI_ATTRIBUTION, userAgent: "short" },
+			identity: { attribution: NO_MISTAKES_ATTRIBUTION, userAgent: "short" },
 			headers: { "HTTP-Referer": null } as ProviderHeaders,
 		}).result();
 
 		const headers = capture.headers();
-		expect(headers.get("user-agent")).toBe("pi");
+		expect(headers.get("user-agent")).toBe("no-mistakes");
 		expect(headers.get("x-openrouter-title")).toBe("model-title");
 		expect(headers.has("http-referer")).toBe(false);
 	});
@@ -207,12 +215,12 @@ describe("client identity in requests", () => {
 		};
 
 		const fromModels = await send(models);
-		expect(fromModels.get("user-agent")).toBe("pi");
+		expect(fromModels.get("user-agent")).toBe("no-mistakes");
 		expect(fromModels.get("x-openrouter-title")).toBe("models");
 
 		const wrapped = withClientIdentity(models, { attribution: attribution("wrapper") });
 		const fromWrapper = await send(wrapped);
-		expect(fromWrapper.get("user-agent")).toBe("pi");
+		expect(fromWrapper.get("user-agent")).toBe("no-mistakes");
 		expect(fromWrapper.get("x-openrouter-title")).toBe("wrapper");
 		expect(wrapped.getModel("openrouter", "test-model")).toBe(model);
 		// A MutableModels stays mutable.
@@ -229,7 +237,7 @@ describe("client identity in requests", () => {
 
 		const fromRequest = await send(wrapped, { attribution: null });
 		expect(fromRequest.has("x-openrouter-title")).toBe(false);
-		expect(fromRequest.get("user-agent")).toBe("pi");
+		expect(fromRequest.get("user-agent")).toBe("no-mistakes");
 	});
 
 	it("sends the OpenCode session header to custom providers pointing at OpenCode", async () => {

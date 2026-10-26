@@ -1,4 +1,4 @@
-# @earendil-works/pi-mcp
+# @no-mistakes/mcp
 
 A small, standalone Model Context Protocol client. It does not depend on the official MCP SDK or other pi packages.
 
@@ -7,7 +7,7 @@ The package provides a transport-neutral client core, stdio and Streamable HTTP 
 ## Usage
 
 ```typescript
-import { McpClient, StdioTransport } from "@earendil-works/pi-mcp";
+import { McpClient, StdioTransport } from "@no-mistakes/mcp";
 
 const transport = new StdioTransport({
 	command: "npx",
@@ -29,13 +29,13 @@ For a remote server, use `new StreamableHttpTransport({ url, headers })`. Fetch 
 
 ### Tools for an LLM
 
-`toLlmContent(result)` converts a `CallToolResult` to text and image content for a model, in the shape of `@earendil-works/pi-ai`'s `TextContent` and `ImageContent`. Text and images pass through, embedded text and image resources are unwrapped, and audio, resource links, and binary resources become short text placeholders. A result without content blocks but with `structuredContent` becomes its JSON.
+`toLlmContent(result)` converts a `CallToolResult` to text and image content for a model, in the shape of `@no-mistakes/ai`'s `TextContent` and `ImageContent`. Text and images pass through, embedded text and image resources are unwrapped, and audio, resource links, and binary resources become short text placeholders. A result without content blocks but with `structuredContent` becomes its JSON.
 
 Wrapping an MCP tool as a `pi-agent-core` `AgentTool`:
 
 ```typescript
-import type { AgentTool } from "@earendil-works/pi-agent-core";
-import { toLlmContent } from "@earendil-works/pi-mcp";
+import type { AgentTool } from "@no-mistakes/agent-core";
+import { toLlmContent } from "@no-mistakes/mcp";
 import { Type } from "typebox";
 
 const tools: AgentTool[] = (await client.listTools()).map((tool) => ({
@@ -53,21 +53,21 @@ const tools: AgentTool[] = (await client.listTools()).map((tool) => ({
 }));
 ```
 
-The [mcp-codemode example](https://github.com/earendil-works/pi/tree/main/packages/agent/examples/mcp-codemode) also forwards progress, passes `structuredContent` through, and lets `@earendil-works/pi-codemode` scripts call the tools.
+The [mcp-codemode example](https://github.com/meedoomostafa/no-mistakes/tree/main/packages/agent/examples/mcp-codemode) also forwards progress, passes `structuredContent` through, and lets `@no-mistakes/codemode` scripts call the tools.
 
 ### OAuth
 
-`@earendil-works/pi-mcp/oauth` provides the MCP OAuth client subset without depending on the official SDK:
+`@no-mistakes/mcp/oauth` provides the MCP OAuth client subset without depending on the official SDK:
 
 ```typescript
-import { McpClient, StreamableHttpTransport } from "@earendil-works/pi-mcp";
+import { McpClient, StreamableHttpTransport } from "@no-mistakes/mcp";
 import {
 	adaptOAuthProvider,
 	authorizeMcp,
 	McpOAuthAuthorizationRequiredError,
 	McpOAuthProvider,
 	OAuthCallbackServer,
-} from "@earendil-works/pi-mcp/oauth";
+} from "@no-mistakes/mcp/oauth";
 
 const serverUrl = "https://mcp.example.com/mcp";
 const callback = await OAuthCallbackServer.listen();
@@ -133,4 +133,4 @@ Batch JSON-RPC messages, legacy HTTP+SSE, servers, sampling, and tasks are outsi
 
 ## Testing
 
-`@earendil-works/pi-mcp/testing` exports `createInMemoryTransportPair()` for client and adapter tests.
+`@no-mistakes/mcp/testing` exports `createInMemoryTransportPair()` for client and adapter tests.

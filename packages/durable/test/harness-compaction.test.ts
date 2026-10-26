@@ -11,7 +11,7 @@ import {
 	type TranscriptContext,
 	Type,
 	type UserMessage,
-} from "@earendil-works/pi-ai";
+} from "@no-mistakes/ai";
 import {
 	type AgentEvent,
 	type CompactionPolicy,
@@ -29,7 +29,7 @@ import {
 	type TaskId,
 	UsageDoc,
 	watchEvents,
-} from "@earendil-works/pi-durable";
+} from "@no-mistakes/durable";
 import { afterEach, describe, expect, it } from "vitest";
 import { selectCut, serializeConversation } from "../src/harness/compaction.ts";
 import { orderToolResults } from "../src/harness/context.ts";

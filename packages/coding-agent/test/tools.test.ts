@@ -218,7 +218,7 @@ describe("Coding Agent Tools", () => {
 			expect(imageBlock?.mimeType).toBe("image/png");
 			expect(typeof imageBlock?.data).toBe("string");
 			expect((imageBlock?.data ?? "").length).toBeGreaterThan(0);
-			// Programmatic callers get the same image as a block. https://github.com/earendil-works/pi/issues/10251
+			// Programmatic callers get the same image as a block. https://github.com/meedoomostafa/no-mistakes/issues/10251
 			expect(result.structuredContent).toEqual({
 				type: "image",
 				data: imageBlock?.data,
@@ -543,7 +543,7 @@ describe("Coding Agent Tools", () => {
 			expect(readFileSync(largeOutput.full_output_path!, "utf-8").endsWith("300000\n")).toBe(true);
 		});
 
-		// Regression tests for https://github.com/earendil-works/pi/issues/9577
+		// Regression tests for https://github.com/meedoomostafa/no-mistakes/issues/9577
 		it.skipIf(process.platform === "win32")(
 			"should map signal-killed commands to 128 plus the signal number",
 			async () => {
@@ -908,7 +908,7 @@ describe("Coding Agent Tools", () => {
 			expect(output).not.toContain("match two");
 		});
 
-		// https://github.com/earendil-works/pi/issues/11203
+		// https://github.com/meedoomostafa/no-mistakes/issues/11203
 		it("should ignore RIPGREP_CONFIG_PATH", async () => {
 			const configFile = join(testDir, "rg-config");
 			const testFile = join(testDir, "fixture.txt");

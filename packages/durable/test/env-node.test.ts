@@ -4,7 +4,7 @@ import { access, chmod, type FileHandle, open, realpath, symlink } from "node:fs
 import { homedir, tmpdir } from "node:os";
 import { delimiter, join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { BACKGROUND_CONTEXT, withAbortSignal } from "@earendil-works/chord/context";
+import { BACKGROUND_CONTEXT, withAbortSignal } from "@no-mistakes/chord/context";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { FileError, getOrThrow, type ShellExecOptions } from "../src/env/index.ts";
 import { NodeExecutionEnv } from "../src/env/node.ts";
@@ -602,10 +602,10 @@ describe("NodeExecutionEnv shell", () => {
 
 	it.each([
 		["a missing override preserves the base value", undefined, "x:/stale/parent.jsonl"],
-		["an empty override shadows the base value", { PI_SESSION_FILE: "" }, "x:"],
+		["an empty override shadows the base value", { NO_MISTAKES_SESSION_FILE: "" }, "x:"],
 		[
 			"a string override replaces the base value",
-			{ PI_SESSION_FILE: "/sessions/current.jsonl" },
+			{ NO_MISTAKES_SESSION_FILE: "/sessions/current.jsonl" },
 			"x:/sessions/current.jsonl",
 		],
 	] as const)(
@@ -615,14 +615,14 @@ describe("NodeExecutionEnv shell", () => {
 			const env = new NodeExecutionEnv({
 				cwd: root,
 				shellEnv: {
-					PI_SESSION_FILE: "/stale/parent.jsonl",
-					PI_CODING_AGENT: "true",
-					PI_NODE_ENV_PRESERVED_TEST: "preserved",
+					NO_MISTAKES_SESSION_FILE: "/stale/parent.jsonl",
+					NO_MISTAKES_CODING_AGENT: "true",
+					NO_MISTAKES_NODE_ENV_PRESERVED_TEST: "preserved",
 				},
 			});
 			const collected = await collectShellOutput(
 				env,
-				`printf '%s:%s|%s|%s' "\${PI_SESSION_FILE+x}" "\${PI_SESSION_FILE-}" "$PI_CODING_AGENT" "$PI_NODE_ENV_PRESERVED_TEST"`,
+				`printf '%s:%s|%s|%s' "\${NO_MISTAKES_SESSION_FILE+x}" "\${NO_MISTAKES_SESSION_FILE-}" "$NO_MISTAKES_CODING_AGENT" "$NO_MISTAKES_NODE_ENV_PRESERVED_TEST"`,
 				{ env: overrides },
 				BACKGROUND_CONTEXT,
 			);
@@ -633,9 +633,9 @@ describe("NodeExecutionEnv shell", () => {
 
 	it("can replace rather than inherit the default shell environment", async () => {
 		const root = createTempDir();
-		const inheritedKey = "PI_NODE_ENV_INHERITED_TEST";
-		const configuredKey = "PI_NODE_ENV_CONFIGURED_TEST";
-		const explicitKey = "PI_NODE_ENV_EXPLICIT_TEST";
+		const inheritedKey = "NO_MISTAKES_NODE_ENV_INHERITED_TEST";
+		const configuredKey = "NO_MISTAKES_NODE_ENV_CONFIGURED_TEST";
+		const explicitKey = "NO_MISTAKES_NODE_ENV_EXPLICIT_TEST";
 		const previousInherited = process.env[inheritedKey];
 		process.env[inheritedKey] = "host";
 		try {
@@ -788,7 +788,7 @@ describe("NodeExecutionEnv shell", () => {
 		expect(result).toEqual({ exitCode: 7 });
 	});
 
-	// Regression test for https://github.com/earendil-works/pi/issues/8992
+	// Regression test for https://github.com/meedoomostafa/no-mistakes/issues/8992
 	it.skipIf(process.platform === "win32")("maps signal-killed processes to a non-zero exit code", async () => {
 		const root = createTempDir();
 		const env = new NodeExecutionEnv({ cwd: root });

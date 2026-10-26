@@ -6,10 +6,10 @@ import {
 	type ModelType,
 	type Provider,
 	type RefreshModelsContext,
-} from "@earendil-works/pi-ai";
+} from "@no-mistakes/ai";
 import { VERSION } from "../config.ts";
 import { fetchWithRetry } from "../utils/management-http.ts";
-import { getPiUserAgent } from "../utils/pi-user-agent.ts";
+import { getPiCatalogUserAgent } from "../utils/no-mistakes-user-agent.ts";
 
 const DEFAULT_CATALOG_BASE_URL = "https://pi.dev";
 const REMOTE_CATALOG_ATTEMPT_TIMEOUT_MS = 4_000;
@@ -85,7 +85,7 @@ function requestCatalog(
 		{
 			headers: {
 				accept: "application/json",
-				"User-Agent": getPiUserAgent(VERSION),
+				"User-Agent": getPiCatalogUserAgent(VERSION),
 				...(validator ? { "if-none-match": validator } : {}),
 			},
 			signal,
@@ -130,7 +130,7 @@ export function withRemoteCatalog(
 			}
 			if (!context.allowNetwork || context.signal.aborted) return;
 			// Skip the request if pi.dev was checked less than REMOTE_CATALOG_REFRESH_INTERVAL_MS ago.
-			// An entry without lastModified (saved by an older pi, or after a failed first request) is
+			// An entry without lastModified (saved by an older version, or after a failed first request) is
 			// always refetched: remoteModels() ignores it, so waiting would leave the overlay empty.
 			if (
 				!context.force &&

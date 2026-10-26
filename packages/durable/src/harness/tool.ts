@@ -1,6 +1,8 @@
-import { type Context, copyJson, type Draft, type JsonRepresentation, type JsonValue } from "@earendil-works/chord";
-import { awaitWithContext } from "@earendil-works/chord/context";
-import { overlap, ownedSlice } from "@earendil-works/chord/delta";
+import type { ImageContent, TextContent, ToolCall, ToolResultMessage } from "@no-mistakes/ai";
+import { validateToolArguments } from "@no-mistakes/ai/utils/validation";
+import { type Context, copyJson, type Draft, type JsonRepresentation, type JsonValue } from "@no-mistakes/chord";
+import { awaitWithContext } from "@no-mistakes/chord/context";
+import { overlap, ownedSlice } from "@no-mistakes/chord/delta";
 import {
 	boundOutput,
 	OutputBuffer,
@@ -8,9 +10,7 @@ import {
 	PROGRESS_BYTES_PER_SECOND,
 	Progress,
 	type ProgressClock,
-} from "@earendil-works/chord/output";
-import type { ImageContent, TextContent, ToolCall, ToolResultMessage } from "@earendil-works/pi-ai";
-import { validateToolArguments } from "@earendil-works/pi-ai/utils/validation";
+} from "@no-mistakes/chord/output";
 import { Compile } from "typebox/compile";
 import { defineDocFamily } from "../documents.ts";
 import { AssistantEntry, ToolResultEntry } from "../entries.ts";

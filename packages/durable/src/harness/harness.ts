@@ -1,19 +1,19 @@
-import type { Context, JsonValue } from "@earendil-works/chord";
-import { withAbortSignal, withoutAbortSignal } from "@earendil-works/chord/context";
-import type { Models } from "@earendil-works/pi-ai";
+import type { Models } from "@no-mistakes/ai";
 import {
 	type ClientIdentity,
 	mergeClientIdentity,
-	PI_ATTRIBUTION,
+	NO_MISTAKES_ATTRIBUTION,
 	withClientIdentity,
-} from "@earendil-works/pi-ai/utils/identity";
+} from "@no-mistakes/ai/utils/identity";
+import type { Context, JsonValue } from "@no-mistakes/chord";
+import { withAbortSignal, withoutAbortSignal } from "@no-mistakes/chord/context";
 import {
 	createTypedMetrics,
 	NOOP_TELEMETRY_CONTEXT,
 	NOOP_TELEMETRY_METRICS,
 	type SpanAttributes,
 	type TelemetryContext,
-} from "@earendil-works/pi-telemetry";
+} from "@no-mistakes/telemetry";
 import { ResetEntry } from "../entries.ts";
 import type { ExecutionEnv } from "../env/index.ts";
 import { contained, SessionImpl } from "../session/session.ts";
@@ -182,7 +182,7 @@ class ConversationImpl<Tool extends ToolRegistration> implements Conversation {
 }
 
 /** Request identity of a Harness's model requests: pi-ai's defaults with provider attribution to pi. */
-export const DEFAULT_HARNESS_IDENTITY: ClientIdentity = { attribution: PI_ATTRIBUTION };
+export const DEFAULT_HARNESS_IDENTITY: ClientIdentity = { attribution: NO_MISTAKES_ATTRIBUTION };
 
 /**
  * `HarnessOptions.models` as a function with `HarnessOptions.identity` applied. A plain `Models` is wrapped once; a

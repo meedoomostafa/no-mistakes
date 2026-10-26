@@ -1,4 +1,4 @@
-import { defineTelemetrySchema } from "@earendil-works/pi-telemetry";
+import { defineTelemetrySchema } from "@no-mistakes/telemetry";
 
 const entry = {
 	description: "A transcript entry was committed; content remains in the transcript.",

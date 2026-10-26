@@ -1,71 +1,65 @@
 # Quickstart
 
-Pi runs in your terminal and works with files on your machine. To use it, you need access to a model through a supported provider. This can be a subscription, an API key, or a local model.
+no-mistakes runs in your terminal and works with files on your machine. To use it, you need access to a model through a supported provider. This can be a subscription, an API key, or a local model.
 
 For native Windows setup, read [Windows Setup](windows.md). For Android, read [Termux Setup](termux.md).
 
-## 1. Install Pi
+## 1. Install no-mistakes
 
-On macOS or Linux, you can use the installer:
-
-```bash
-curl -fsSL https://pi.dev/install.sh | sh
-```
-
-The installer pins all dependencies and updates Pi with `pi update`. Alternatively, install Pi from npm, which does not pin transitive dependencies. This requires Node.js 22.19 or newer:
+Install the npm package with Node.js 22.19 or newer:
 
 ```bash
-npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+npm install -g --ignore-scripts @no-mistakes/coding-agent
 ```
 
-Pi does not require dependency lifecycle scripts for a normal npm installation.
+no-mistakes does not require dependency lifecycle scripts for a normal npm installation.
 
-With Nix on macOS or Linux, install the latest release from Pi's flake. Nix builds Pi from source:
+Prebuilt binaries are also published on [GitHub Releases](https://github.com/meedoomostafa/no-mistakes/releases). Download the archive for your platform and run the `no-mistakes` executable.
+
+With Nix on macOS or Linux, install the latest release from the no-mistakes flake. Nix builds no-mistakes from source:
 
 ```bash
-nix profile add github:earendil-works/pi/stable
+nix profile add github:meedoomostafa/no-mistakes/stable
 ```
 
-Older Nix versions use `nix profile install` instead. Update with `nix profile upgrade pi`; `pi update` cannot update a Nix installation. To pin a release, use a tag such as `github:earendil-works/pi/v1.0.0`.
+Older Nix versions use `nix profile install` instead. Update with `nix profile upgrade no-mistakes`; `no-mistakes update` cannot update a Nix installation. To pin a release, use a tag such as `github:meedoomostafa/no-mistakes/v1.0.0`.
 
 Verify the installation:
 
 ```bash
-pi --version
+no-mistakes --version
 ```
 
-## 2. Start Pi
+## 2. Start no-mistakes
 
-Change to the folder you want Pi to work with, then start it:
+Change to the folder you want no-mistakes to work with, then start it:
 
 ```bash
 cd /path/to/folder
-pi
+no-mistakes
 ```
 
-The working folder helps Pi discover relevant files, instructions, and configuration. Pi also uses it to group saved sessions.
+The working folder helps no-mistakes discover relevant files, instructions, and configuration. no-mistakes also uses it to group saved sessions.
 
-<p align="center"><img src="images/interactive-mode.png" alt="Pi running in a terminal with a conversation, input editor, and status footer" width="750"></p>
-
-The interface shows your conversation, an editor for prompts and commands, and a footer with the current folder, model, and session status. See [Use Pi in the terminal](usage.md) to learn how to add files, run commands, direct ongoing work, and manage results.
+The interface shows your conversation, an editor for prompts and commands, and a footer with the current folder, model, and session status. See [Use no-mistakes in the terminal](usage.md) to learn how to add files, run commands, direct ongoing work, and manage results.
 
 ## 3. Choose a model
 
-A **model** generates Pi's responses. A **provider** is the service or account Pi uses to access that model.
+A **model** generates no-mistakes responses. A **provider** is the service or account no-mistakes uses to access that model.
 
-In Pi, run:
+Sign in with a provider account or API key:
 
-```text
-/login
+```bash
+no-mistakes auth login
 ```
 
-Choose a provider, then follow the prompts to use a subscription or store an API key. Run `/model` afterward if you want to select a different available model.
+You can also select a provider directly, for example `no-mistakes auth login anthropic`. Provider environment variables are detected automatically and do not need manual export. Run `/model` afterward if you want to select a different available model.
 
 See [Choose a model and provider](models.md) for supported providers, environment-variable authentication, local models, and custom endpoints.
 
-## 4. Give Pi a task
+## 4. Give no-mistakes a task
 
-Pi shows each file read, search, command, and edit it performs. It does not ask before every tool call.
+no-mistakes shows each file read, search, command, and edit it performs. It does not ask before every tool call.
 
 Enter a task that matches your work, for example:
 
@@ -81,56 +75,50 @@ Explain how this repository is structured and how to run its checks.
 Compare @previous.csv with @current.csv and summarize the important changes.
 ```
 
-Type `@` in the editor to search for a file instead of entering its full path. When Pi finishes, review its response and any changed files. Use version control or backups for important work. For untrusted or unattended work, use a container or another sandbox. See [Security](security.md).
+Type `@` in the editor to search for a file instead of entering its full path. When no-mistakes finishes, review its response and any changed files. Use version control or backups for important work. For untrusted or unattended work, use a container or another sandbox. See [Security](security.md).
 
 ## Continue later
 
-Pi saves sessions automatically. Exit Pi, then resume the most recent session for the same working folder with:
+no-mistakes saves sessions automatically. Exit no-mistakes, then resume the most recent session for the same working folder with:
 
 ```bash
-pi --continue
+no-mistakes --continue
 ```
 
 Use `/resume` to choose another saved session. See [Continue or branch a session](sessions.md) for session naming, branching, compaction, export, and sharing.
 
 ## Next steps
 
-- [Use Pi interactively](usage.md) to learn input, commands, shortcuts, and queued messages.
-- [Add instructions](configuration.md#context-files) that Pi should follow whenever it works in a folder.
+- [Use no-mistakes interactively](usage.md) to learn input, commands, shortcuts, and queued messages.
+- [Add instructions](configuration.md#context-files) that no-mistakes should follow whenever it works in a folder.
 - [Choose a model and provider](models.md).
 
-### Choose how to customize Pi
+### Choose how to customize no-mistakes
 
 Start with the least powerful mechanism that meets your need:
 
 | Need | Start with |
 |---|---|
-| Give Pi persistent instructions for a folder | [`AGENTS.md`](configuration.md#context-files) |
+| Give no-mistakes persistent instructions for a folder | [`AGENTS.md`](configuration.md#context-files) |
 | Reuse a prompt from the `/` menu | [Prompt template](prompt-templates.md) |
 | Add task-specific instructions and supporting files | [Skill](skills.md) |
 | Add executable tools, commands, or event handlers | [Extension](extensions.md) |
 | Build a custom terminal component | [Terminal UI](tui.md) |
 | Connect an unsupported model service | [Custom provider](custom-provider.md) |
-| Install or distribute several resources | [Pi package](packages.md) |
+| Install or distribute several resources | [no-mistakes package](packages.md) |
 
-## Uninstall Pi
+## Uninstall no-mistakes
 
-If you installed Pi with npm, run:
-
-```bash
-npm uninstall -g @earendil-works/pi-coding-agent
-```
-
-If you used the installer, run it again and choose **Uninstall Pi**:
+If you installed no-mistakes with npm, run:
 
 ```bash
-curl -fsSL https://pi.dev/install.sh | sh
+npm uninstall -g @no-mistakes/coding-agent
 ```
 
-If you installed Pi with Nix, run:
+If you installed no-mistakes with Nix, run:
 
 ```bash
-nix profile remove pi
+nix profile remove no-mistakes
 ```
 
-None of these methods removes configuration, credentials, sessions, or installed Pi packages from `~/.pi/agent/`.
+Neither method removes configuration, credentials, sessions, or installed no-mistakes packages from `~/.no-mistakes/agent/`.

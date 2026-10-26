@@ -19,14 +19,14 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 /** Workspace package name -> its source root, so cross-package imports are followed. */
 const WORKSPACE = {
-	"@earendil-works/chord": "packages/chord/src",
-	"@earendil-works/pi-ai": "packages/ai/src",
-	"@earendil-works/pi-durable": "packages/durable/src",
-	"@earendil-works/pi-agent-core": "packages/agent/src",
-	"@earendil-works/pi-codemode": "packages/codemode/src",
-	"@earendil-works/pi-telemetry": "packages/telemetry/src",
-	"@earendil-works/pi-mcp": "packages/mcp/src",
-	"@earendil-works/pi-tui": "packages/tui/src",
+	"@no-mistakes/chord": "packages/chord/src",
+	"@no-mistakes/ai": "packages/ai/src",
+	"@no-mistakes/durable": "packages/durable/src",
+	"@no-mistakes/agent-core": "packages/agent/src",
+	"@no-mistakes/codemode": "packages/codemode/src",
+	"@no-mistakes/telemetry": "packages/telemetry/src",
+	"@no-mistakes/mcp": "packages/mcp/src",
+	"@no-mistakes/tui": "packages/tui/src",
 };
 
 /**
@@ -36,7 +36,7 @@ const WORKSPACE = {
 const BUDGETS = {
 	"packages/ai": {
 		"./models": {
-			// Request telemetry reaches pi-ai's telemetry.ts and pi-telemetry's root (index, noop, metrics, memory).
+			// Request telemetry reaches @no-mistakes/ai's telemetry.ts and @no-mistakes/telemetry's root (index, noop, metrics, memory).
 			// Request identity reaches utils/identity.ts and its version constant.
 			maxFiles: 20,
 			forbid: ["providers/", "models.generated.ts", "index.ts", "utils/validation.ts", "utils/typebox-helpers.ts"],
@@ -60,12 +60,12 @@ const BUDGETS = {
 	},
 	"packages/durable": {
 		".": {
-			// Tool argument validation reaches TypeBox; provider-session creation reaches pi-ai's lean UUID utility; the
+			// Tool argument validation reaches TypeBox; provider-session creation reaches @no-mistakes/ai's lean UUID utility; the
 			// memory and SQLite storages share scan order and cursor handling. Values from Chord's root (copyJson,
-			// replicatedState) reach its host runtime through the root barrel. Chord's context reaches pi-telemetry's root
+			// replicatedState) reach its host runtime through the root barrel. Chord's context reaches @no-mistakes/telemetry's root
 			// (index, noop, metrics, memory) for its NOOP telemetry default; harness/telemetry.ts is Durable's schema.
-			// The Harness's request identity reaches pi-ai's utils/identity.ts and its version constant. Partial commits
-			// parse streamed tool-call arguments with pi-ai's utils/streaming-json.ts (and its json-parse.ts) to append what
+			// The Harness's request identity reaches @no-mistakes/ai's utils/identity.ts and its version constant. Partial commits
+			// parse streamed tool-call arguments with @no-mistakes/ai's utils/streaming-json.ts (and its json-parse.ts) to append what
 			// argument strings grew by (harness/partial-changes.ts). Chord's watches fold pending ops with Delta's
 			// pending queue (delta/pending.ts).
 			maxFiles: 77,

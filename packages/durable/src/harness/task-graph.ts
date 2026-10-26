@@ -1,6 +1,6 @@
-import { type Context, type JsonValue, Watch, type WatchHandle } from "@earendil-works/chord";
-import { BACKGROUND_CONTEXT, withoutAbortSignal } from "@earendil-works/chord/context";
-import { applyImmutable, type Op } from "@earendil-works/chord/delta";
+import { type Context, type JsonValue, Watch, type WatchHandle } from "@no-mistakes/chord";
+import { BACKGROUND_CONTEXT, withoutAbortSignal } from "@no-mistakes/chord/context";
+import { applyImmutable, type Op } from "@no-mistakes/chord/delta";
 import { contained, type ObservedCommit, type SessionImpl } from "../session/session.ts";
 import type { ConversationId, JoinPolicy, Storage, TaskId, TaskOutcome, TaskRecord } from "../types.ts";
 import { type BlockedReason, type BlockedSubject, blockedSubject } from "./scheduler.ts";

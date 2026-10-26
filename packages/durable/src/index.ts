@@ -1,4 +1,4 @@
-export type { WatchEnd, WatchHandle } from "@earendil-works/chord";
+export type { WatchEnd, WatchHandle } from "@no-mistakes/chord";
 export { defineDoc, defineDocFamily } from "./documents.ts";
 export {
 	AssistantEntry,

@@ -1,4 +1,3 @@
-import { type Context, copyJson, type Draft } from "@earendil-works/chord";
 import type {
 	Api,
 	AssistantMessage,
@@ -8,10 +7,11 @@ import type {
 	ModelThinkingLevel,
 	SimpleStreamOptions,
 	ToolCall,
-} from "@earendil-works/pi-ai";
-import { isContextOverflow } from "@earendil-works/pi-ai/utils/overflow";
-import { isRetryableAssistantError, retryDelayMs } from "@earendil-works/pi-ai/utils/retry";
-import { getCurrentTools } from "@earendil-works/pi-ai/utils/transcript";
+} from "@no-mistakes/ai";
+import { isContextOverflow } from "@no-mistakes/ai/utils/overflow";
+import { isRetryableAssistantError, retryDelayMs } from "@no-mistakes/ai/utils/retry";
+import { getCurrentTools } from "@no-mistakes/ai/utils/transcript";
+import { type Context, copyJson, type Draft } from "@no-mistakes/chord";
 import { AssistantEntry, ResetEntry, SystemEntry, UserEntry } from "../entries.ts";
 import type { ExecutionEnv } from "../env/index.ts";
 import type { TaskCreationOptions } from "../session/transaction.ts";

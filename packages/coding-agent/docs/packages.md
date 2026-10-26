@@ -1,41 +1,41 @@
-# Pi Packages
+# no-mistakes Packages
 
-Pi packages install and distribute extensions, skills, prompt templates, and themes as one unit. Use a package when a customization should be shared through npm or git, or when several resources belong together.
+no-mistakes packages install and distribute extensions, skills, prompt templates, and themes as one unit. Use a package when a customization should be shared through npm or git, or when several resources belong together.
 
-A package is an ordinary directory or npm package. It can expose conventional resource directories, declare explicit paths under the `pi` key in `package.json`, and carry its own runtime dependencies.
+A package is an ordinary directory or npm package. It can expose conventional resource directories, declare explicit paths under the `noMistakes` key in `package.json`, and carry its own runtime dependencies.
 
 ## Install and manage packages
 
 Install from npm, git, or a local path:
 
 ```bash
-pi install npm:@example/pi-tools@1.0.0
-pi install git:github.com/example/pi-tools@v1
-pi install ./local-package
+no-mistakes install npm:@example/agent-tools@1.0.0
+no-mistakes install git:github.com/example/agent-tools@v1
+no-mistakes install ./local-package
 ```
 
-`pi list` shows configured packages. Use `pi remove <source>` to remove one and `pi update --extensions` to reconcile package installations. See [Command Line](cli.md#package-commands) for every package command and option.
+`no-mistakes list` shows configured packages. Use `no-mistakes remove <source>` to remove one and `no-mistakes update` to reconcile package installations. See [Command Line](cli.md#package-commands) for every package command and option.
 
-If a configured package fails to install at startup, for example because npm cannot reach the registry, Pi warns about it, skips that package's resources, and keeps running. Pi tries to install it again on the next start or `/reload`. `pi install` and `pi update --extensions` still report the failure and exit non-zero.
+If a configured package fails to install at startup, for example because npm cannot reach the registry, no-mistakes warns about it, skips that package's resources, and keeps running. It tries to install the package again on the next start or `/reload`. `no-mistakes install` and `no-mistakes update` still report the failure and exit non-zero.
 
-Personal installs are written to `~/.pi/agent/settings.json`. Add `--local` or `-l` to write the package declaration to `.pi/settings.json`. Pi reads declarations from that file only after project trust is granted.
+Personal installs are written to `~/.no-mistakes/agent/settings.json`. Add `--local` or `-l` to write the package declaration to `.no-mistakes/settings.json`. no-mistakes reads declarations from that file only after project trust is granted.
 
 Project packages are installed and loaded only after project trust is resolved. Packages can execute extension code and can include skills that instruct the model to run programs. Review third-party package source before installing it. Review project package declarations before granting project trust.
 
 Use `--extension` or `-e` to try a package for one invocation without adding it to settings:
 
 ```bash
-pi -e npm:@example/pi-tools
+no-mistakes -e npm:@example/agent-tools
 ```
 
 ## Choose a source
 
 | Source | Example | Behavior |
 |---|---|---|
-| npm | `npm:@example/pi-tools@1.0.0` | Installed under the Pi npm directory |
-| git | `git:github.com/example/pi-tools@v1` | Cloned and reconciled to the selected ref |
-| URL | `https://github.com/example/pi-tools` | Treated as a git source |
-| Local | `./pi-tools` | Loaded from the resolved path without copying |
+| npm | `npm:@example/agent-tools@1.0.0` | Installed under the no-mistakes npm directory |
+| git | `git:github.com/example/agent-tools@v1` | Cloned and reconciled to the selected ref |
+| URL | `https://github.com/example/agent-tools` | Treated as a git source |
+| Local | `./agent-tools` | Loaded from the resolved path without copying |
 
 Versioned npm specifications are pinned. Git tags and commits are also pinned; package updates reconcile the checkout but do not move a configured ref.
 
@@ -46,7 +46,7 @@ Relative local paths resolve from the settings file that contains them. A file p
 The simplest package uses conventional directories:
 
 ```text
-my-pi-package/
+my-agent-package/
 ├── package.json
 ├── extensions/
 ├── skills/
@@ -54,15 +54,14 @@ my-pi-package/
 └── themes/
 ```
 
-Without a `pi` manifest, Pi discovers TypeScript and JavaScript extensions, skill directories, Markdown prompts, and JSON themes from those directories.
+Without a `noMistakes` manifest, no-mistakes discovers TypeScript and JavaScript extensions, skill directories, Markdown prompts, and JSON themes from those directories.
 
 Use an explicit manifest when resources live elsewhere or need filtering:
 
 ```json
 {
-  "name": "my-pi-package",
-  "keywords": ["pi-package"],
-  "pi": {
+  "name": "my-agent-package",
+  "noMistakes": {
     "extensions": ["./src/extension.ts"],
     "skills": ["./resources/skills"],
     "prompts": ["./resources/prompts/*.md"],
@@ -73,23 +72,23 @@ Use an explicit manifest when resources live elsewhere or need filtering:
 
 Paths are relative to the package root. Arrays accept glob patterns and exclusions. List dot-prefixed or symlinked resource roots directly when traversal through a glob would not discover them.
 
-The `pi-package` keyword makes an npm package eligible for discovery in the [Pi package gallery](https://pi.dev/packages). Optional `pi.image` and `pi.video` fields add gallery previews.
+Distribute the package through npm or a GitHub repository and share its install command. no-mistakes does not require a gallery keyword or preview metadata.
 
 ## Declare dependencies
 
-Put runtime packages imported by extensions in `dependencies`. Pi installs package dependencies when it installs an npm or git source.
+Put runtime packages imported by extensions in `dependencies`. no-mistakes installs package dependencies when it installs an npm or git source.
 
-Pi supplies these packages to extensions and skills:
+no-mistakes supplies these packages to extensions and skills:
 
-- `@earendil-works/pi-ai`
-- `@earendil-works/pi-agent-core`
-- `@earendil-works/pi-coding-agent`
-- `@earendil-works/pi-tui`
+- `@no-mistakes/ai`
+- `@no-mistakes/agent-core`
+- `@no-mistakes/coding-agent`
+- `@no-mistakes/tui`
 - `typebox`
 
-Declare the host-provided packages listed above in `peerDependencies` with a `"*"` range and do not bundle them. Pi suppresses automatic peer installation for managed npm packages and git packages installed with npm, pnpm, or Bun. Local packages are not installed or modified, so their dependency tree remains the package author's responsibility.
+Declare the host-provided packages listed above in `peerDependencies` with a `"*"` range and do not bundle them. no-mistakes suppresses automatic peer installation for managed npm packages and git packages installed with npm, pnpm, or Bun. Local packages are not installed or modified, so their dependency tree remains the package author's responsibility.
 
-Do not list host-provided packages in `dependencies`. A physical copy can bypass Pi's extension module mapping in compiled ESM and create duplicate classes, registries, and initialization work. Pi reports an extension warning when it detects this manifest configuration. Other Pi packages used as dependencies must be included in the published tarball and referenced through their `node_modules` resource paths.
+Do not list host-provided packages in `dependencies`. A physical copy can bypass the extension module mapping in compiled ESM and create duplicate classes, registries, and initialization work. no-mistakes reports an extension warning when it detects this manifest configuration. Other no-mistakes packages used as dependencies must be included in the published tarball and referenced through their `node_modules` resource paths.
 
 Installed packages load with separate module roots. Do not rely on two packages sharing one dependency instance or one package resolving another package’s undeclared dependency.
 
@@ -101,7 +100,7 @@ The object form in settings narrows which resources load from a package:
 {
   "packages": [
     {
-      "source": "npm:@example/pi-tools",
+      "source": "npm:@example/agent-tools",
       "extensions": ["extensions/*.ts", "!extensions/legacy.ts"],
       "skills": [],
       "prompts": ["prompts/review.md"]
@@ -120,12 +119,12 @@ For each resource type:
 
 Filters narrow the package manifest. They do not expose resources that the package itself did not declare.
 
-Run `pi config` to enable or disable discovered resources and pi's built-in extensions. It starts with personal configuration; press Tab to switch scope, or run `pi config --local` to start with project overrides.
+Run `no-mistakes config` to enable or disable discovered resources and built-in extensions. It starts with personal configuration; press Tab to switch scope, or run `no-mistakes config --local` to start with project overrides.
 
 ## Understand scope and identity
 
 The same package can appear in personal and project settings. A project entry normally replaces the personal entry. With `autoload: false`, the project entry instead acts as a filtering delta over the personal package.
 
-Pi identifies npm packages by package name, git packages by repository URL without the ref, and local packages by resolved absolute path. This prevents the same package from loading twice through equivalent declarations.
+no-mistakes identifies npm packages by package name, git packages by repository URL without the ref, and local packages by resolved absolute path. This prevents the same package from loading twice through equivalent declarations.
 
 Use [Extensions](extensions.md), [Skills](skills.md), [Prompt Templates](prompt-templates.md), and [Themes](themes.md) to design each resource before packaging it.

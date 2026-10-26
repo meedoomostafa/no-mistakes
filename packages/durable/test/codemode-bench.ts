@@ -8,10 +8,10 @@
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { BACKGROUND_CONTEXT as context } from "@earendil-works/chord/context";
-import { createModels } from "@earendil-works/pi-ai/models";
-import { fauxAssistantMessage, fauxProvider, fauxText, fauxToolCall } from "@earendil-works/pi-ai/providers/faux";
-import { CodemodeSandbox } from "@earendil-works/pi-codemode";
+import { createModels } from "@no-mistakes/ai/models";
+import { fauxAssistantMessage, fauxProvider, fauxText, fauxToolCall } from "@no-mistakes/ai/providers/faux";
+import { BACKGROUND_CONTEXT as context } from "@no-mistakes/chord/context";
+import { CodemodeSandbox } from "@no-mistakes/codemode";
 import { Type } from "typebox";
 import { createCodemodeTool } from "../src/codemode/codemode.ts";
 import { createRegistry, defineExtension, defineTool, Harness } from "../src/index.ts";

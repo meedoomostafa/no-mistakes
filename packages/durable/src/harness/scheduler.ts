@@ -1,14 +1,14 @@
-import { type Context, copyJson, type JsonValue } from "@earendil-works/chord";
-import { awaitWithContext, withAbortSignal, withoutAbortSignal, withTelemetry } from "@earendil-works/chord/context";
-import { ownedSlice } from "@earendil-works/chord/delta";
-import type { Models } from "@earendil-works/pi-ai";
+import type { Models } from "@no-mistakes/ai";
+import { type Context, copyJson, type JsonValue } from "@no-mistakes/chord";
+import { awaitWithContext, withAbortSignal, withoutAbortSignal, withTelemetry } from "@no-mistakes/chord/context";
+import { ownedSlice } from "@no-mistakes/chord/delta";
 import {
 	createTypedMetrics,
 	createTypedSpanStarter,
 	NOOP_TELEMETRY_CONTEXT,
 	NOOP_TELEMETRY_METRICS,
 	type TelemetryCarrier,
-} from "@earendil-works/pi-telemetry";
+} from "@no-mistakes/telemetry";
 import type { ExecutionEnv } from "../env/index.ts";
 import { errorMessage, ReadOnlySession } from "../errors.ts";
 import type { ObservedCommit, SessionImpl } from "../session/session.ts";

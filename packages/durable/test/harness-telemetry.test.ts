@@ -1,6 +1,6 @@
-import { withTelemetry } from "@earendil-works/chord/context";
-import { fauxAssistantMessage, fauxToolCall, Type } from "@earendil-works/pi-ai";
-import { CodemodeSandbox } from "@earendil-works/pi-codemode";
+import { fauxAssistantMessage, fauxToolCall, Type } from "@no-mistakes/ai";
+import { withTelemetry } from "@no-mistakes/chord/context";
+import { CodemodeSandbox } from "@no-mistakes/codemode";
 import {
 	CompactionTask,
 	defineTask,
@@ -10,8 +10,8 @@ import {
 	MemoryStorage,
 	type Storage,
 	type TaskId,
-} from "@earendil-works/pi-durable";
-import { InMemoryTelemetryContext } from "@earendil-works/pi-telemetry";
+} from "@no-mistakes/durable";
+import { InMemoryTelemetryContext } from "@no-mistakes/telemetry";
 import { describe, expect, it, vi } from "vitest";
 import { createCodemodeTool } from "../src/codemode/codemode.ts";
 import { type ChatSetup, chatSetup, waitFor } from "./chat-support.ts";

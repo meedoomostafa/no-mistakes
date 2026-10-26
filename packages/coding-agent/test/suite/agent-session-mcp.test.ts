@@ -1,8 +1,8 @@
 import { readFileSync, rmSync } from "node:fs";
-import { fauxAssistantMessage, fauxToolCall } from "@earendil-works/pi-ai";
-import type { SystemMessage, ToolResultMessage } from "@earendil-works/pi-ai/compat";
-import { type JsonRpcRequest, LATEST_PROTOCOL_VERSION } from "@earendil-works/pi-mcp";
-import { createInMemoryTransportPair } from "@earendil-works/pi-mcp/testing";
+import { fauxAssistantMessage, fauxToolCall } from "@no-mistakes/ai";
+import type { SystemMessage, ToolResultMessage } from "@no-mistakes/ai/compat";
+import { type JsonRpcRequest, LATEST_PROTOCOL_VERSION } from "@no-mistakes/mcp";
+import { createInMemoryTransportPair } from "@no-mistakes/mcp/testing";
 import { Type } from "typebox";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { ExtensionAPI, ExtensionFactory } from "../../src/core/extensions/types.ts";
@@ -1234,8 +1234,10 @@ describe("AgentSession MCP tools after resume and reload", () => {
 			await loadDocsSearch(first.harness);
 
 			// Like plan mode restoring its tools, or an extension adding one to the current loadout.
-			const setLoadout: ExtensionFactory = (pi) => {
-				pi.on("session_start", () => pi.setActiveTools(loadout ? [...loadout] : [...pi.getActiveTools(), "read"]));
+			const setLoadout: ExtensionFactory = (noMistakesApi) => {
+				noMistakesApi.on("session_start", () =>
+					noMistakesApi.setActiveTools(loadout ? [...loadout] : [...noMistakesApi.getActiveTools(), "read"]),
+				);
 			};
 			const second = await setup(first.harness.sessionManager, [setLoadout]);
 			await vi.waitFor(() =>

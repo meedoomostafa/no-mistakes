@@ -1,14 +1,14 @@
 import { compare, valid } from "semver";
 import { fetchWithRetry } from "./management-http.ts";
-import { getPiUserAgent } from "./pi-user-agent.ts";
+import { getNoMistakesUserAgent } from "./no-mistakes-user-agent.ts";
 
-const LATEST_VERSION_URL = "https://pi.dev/api/latest-version";
+const LATEST_RELEASE_URL = "https://api.github.com/repos/meedoomostafa/no-mistakes/releases/latest";
 const DEFAULT_VERSION_CHECK_TIMEOUT_MS = 10000;
 
-export interface LatestPiRelease {
+export interface LatestRelease {
 	version: string;
-	packageName?: string;
 	note?: string;
+	url?: string;
 }
 
 /** Include useful errno details hidden behind Node's generic "fetch failed" error. */
@@ -48,18 +48,25 @@ export function isNewerPackageVersion(candidateVersion: string, currentVersion: 
 	return candidateVersion.trim() !== currentVersion.trim();
 }
 
-export async function getLatestPiRelease(
+function parseReleaseVersion(tagName: string): string | undefined {
+	const trimmed = tagName.trim();
+	const candidate = trimmed.startsWith("v") ? trimmed.slice(1) : trimmed;
+	return valid(candidate) ? candidate : undefined;
+}
+
+export async function getLatestRelease(
 	currentVersion: string,
 	options: { timeoutMs?: number; retry?: boolean } = {},
-): Promise<LatestPiRelease | undefined> {
-	if (process.env.PI_OFFLINE) return undefined;
+): Promise<LatestRelease | undefined> {
+	if (process.env.NO_MISTAKES_OFFLINE) return undefined;
 
 	const response = await fetchWithRetry(
-		LATEST_VERSION_URL,
+		LATEST_RELEASE_URL,
 		{
 			headers: {
-				"User-Agent": getPiUserAgent(currentVersion),
-				accept: "application/json",
+				"User-Agent": getNoMistakesUserAgent(currentVersion),
+				accept: "application/vnd.github+json",
+				"X-GitHub-Api-Version": "2022-11-28",
 			},
 		},
 		{
@@ -70,35 +77,35 @@ export async function getLatestPiRelease(
 	if (!response.ok) return undefined;
 
 	const data = (await response.json()) as {
-		packageName?: unknown;
-		version?: unknown;
-		note?: unknown;
+		body?: unknown;
+		html_url?: unknown;
+		tag_name?: unknown;
 	};
-	if (typeof data.version !== "string" || !data.version.trim()) {
-		return undefined;
-	}
-	const packageName =
-		typeof data.packageName === "string" && data.packageName.trim() ? data.packageName.trim() : undefined;
-	const note = typeof data.note === "string" && data.note.trim() ? data.note.trim() : undefined;
+	if (typeof data.tag_name !== "string") return undefined;
+	const version = parseReleaseVersion(data.tag_name);
+	if (!version) return undefined;
+
+	const note = typeof data.body === "string" && data.body.trim() ? data.body.trim() : undefined;
+	const url = typeof data.html_url === "string" && data.html_url.trim() ? data.html_url.trim() : undefined;
 	return {
-		version: data.version.trim(),
-		packageName,
+		version,
 		...(note ? { note } : {}),
+		...(url ? { url } : {}),
 	};
 }
 
-export async function getLatestPiVersion(
+export async function getLatestVersion(
 	currentVersion: string,
 	options: { timeoutMs?: number; retry?: boolean } = {},
 ): Promise<string | undefined> {
-	return (await getLatestPiRelease(currentVersion, options))?.version;
+	return (await getLatestRelease(currentVersion, options))?.version;
 }
 
-export async function checkForNewPiVersion(currentVersion: string): Promise<LatestPiRelease | undefined> {
-	if (process.env.PI_SKIP_VERSION_CHECK) return undefined;
+export async function checkForNewVersion(currentVersion: string): Promise<LatestRelease | undefined> {
+	if (process.env.NO_MISTAKES_SKIP_VERSION_CHECK) return undefined;
 
 	try {
-		const latestRelease = await getLatestPiRelease(currentVersion);
+		const latestRelease = await getLatestRelease(currentVersion);
 		if (latestRelease && isNewerPackageVersion(latestRelease.version, currentVersion)) {
 			return latestRelease;
 		}

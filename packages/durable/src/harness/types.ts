@@ -1,4 +1,3 @@
-import type { Context, JsonValue, WatchHandle } from "@earendil-works/chord";
 import type {
 	AssistantMessage,
 	CacheRetention,
@@ -14,8 +13,9 @@ import type {
 	TSchema,
 	Usage,
 	UserMessage,
-} from "@earendil-works/pi-ai";
-import type { TelemetryContext } from "@earendil-works/pi-telemetry";
+} from "@no-mistakes/ai";
+import type { Context, JsonValue, WatchHandle } from "@no-mistakes/chord";
+import type { TelemetryContext } from "@no-mistakes/telemetry";
 import type { ExecutionEnv, ShellOutputSkip, ShellOutputWindow } from "../env/index.ts";
 import type {
 	CommitOptions,
@@ -628,7 +628,7 @@ export type HarnessOptions<Tool extends ToolRegistration = ToolRegistration> = {
 	readonly models: Models | (() => Models);
 	/**
 	 * How model requests identify the app to providers, merged field by field over `DEFAULT_HARNESS_IDENTITY`
-	 * (`{ attribution: PI_ATTRIBUTION }`, provider attribution to pi). It applies to every request through the Harness's
+	 * (`{ attribution: NO_MISTAKES_ATTRIBUTION }`, provider attribution to pi). It applies to every request through the Harness's
 	 * models, including hooks and tools, and overrides the identity the `Models` was created with; a request's own
 	 * `identity` overrides it. Pass `{ attribution: null }` to send no attribution headers.
 	 */

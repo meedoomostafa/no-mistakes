@@ -14,10 +14,10 @@ import { randomBytes } from "node:crypto";
 import { mkdtemp, readdir, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { BACKGROUND_CONTEXT as context } from "@earendil-works/chord/context";
-import type { ImageContent } from "@earendil-works/pi-ai";
-import { createModels } from "@earendil-works/pi-ai/models";
-import { fauxAssistantMessage, fauxProvider, fauxText, fauxToolCall } from "@earendil-works/pi-ai/providers/faux";
+import type { ImageContent } from "@no-mistakes/ai";
+import { createModels } from "@no-mistakes/ai/models";
+import { fauxAssistantMessage, fauxProvider, fauxText, fauxToolCall } from "@no-mistakes/ai/providers/faux";
+import { BACKGROUND_CONTEXT as context } from "@no-mistakes/chord/context";
 import { Type } from "typebox";
 import {
 	createRegistry,

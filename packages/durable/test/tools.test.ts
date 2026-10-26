@@ -4,14 +4,9 @@ import { appendFileSync, mkdirSync, rmSync } from "node:fs";
 import { symlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { Context, JsonValue } from "@earendil-works/chord";
-import { BACKGROUND_CONTEXT, withAbortSignal } from "@earendil-works/chord/context";
-import type {
-	ToolDiagnostic,
-	ToolExecutionApi,
-	ToolExecutionResult,
-	ToolRegistration,
-} from "@earendil-works/pi-durable";
+import type { Context, JsonValue } from "@no-mistakes/chord";
+import { BACKGROUND_CONTEXT, withAbortSignal } from "@no-mistakes/chord/context";
+import type { ToolDiagnostic, ToolExecutionApi, ToolExecutionResult, ToolRegistration } from "@no-mistakes/durable";
 import { applyPatch } from "diff";
 import { afterAll, describe, expect, it } from "vitest";
 import {
@@ -688,7 +683,7 @@ describe("durable tools", () => {
 		it("prepares command, cwd, and an explicit environment with the call's api", async () => {
 			const env = new NodeExecutionEnv({
 				cwd: createTempDir(),
-				shellEnv: { PI_BASH_PREPARE_INHERITED: "inherited" },
+				shellEnv: { NO_MISTAKES_BASH_PREPARE_INHERITED: "inherited" },
 			});
 			getOrThrow(await env.createDir("workspace", undefined, BACKGROUND_CONTEXT));
 			const workspace = `${env.cwd}/workspace`;
@@ -701,9 +696,9 @@ describe("durable tools", () => {
 					receivedEnv = api.env;
 					receivedSignal = callContext.abortSignal;
 					execution.cwd = workspace;
-					execution.env = { PI_BASH_PREPARE_EXPLICIT: "explicit" };
+					execution.env = { NO_MISTAKES_BASH_PREPARE_EXPLICIT: "explicit" };
 					execution.inheritEnv = false;
-					execution.command += `\n: > prepared-cwd\nprintf '%s:%s:%s' "$prefix" "\${PI_BASH_PREPARE_INHERITED-}" "$PI_BASH_PREPARE_EXPLICIT"`;
+					execution.command += `\n: > prepared-cwd\nprintf '%s:%s:%s' "$prefix" "\${NO_MISTAKES_BASH_PREPARE_INHERITED-}" "$NO_MISTAKES_BASH_PREPARE_EXPLICIT"`;
 					// Git Bash on Windows reports $PWD as an MSYS path, so only POSIX compares it.
 					if (process.platform !== "win32") execution.command += `\nprintf ':%s' "$PWD"`;
 				},

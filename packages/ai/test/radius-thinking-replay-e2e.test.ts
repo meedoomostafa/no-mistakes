@@ -25,7 +25,7 @@
  *   radius                          with 582, without 582 (+0 of 463 output tokens)
  *   radius, level "high" injected   with 997, without 582
  *
- * Credentials: RADIUS_API_KEY or a `radius` entry in ~/.pi/agent/auth.json; ANTHROPIC_API_KEY, ANTHROPIC_OAUTH_TOKEN or
+ * Credentials: RADIUS_API_KEY or a `radius` entry in ~/.no-mistakes/agent/auth.json; ANTHROPIC_API_KEY, ANTHROPIC_OAUTH_TOKEN or
  * an `anthropic` entry for the control. Each test makes three paid requests.
  */
 import { describe, expect, it } from "vitest";
