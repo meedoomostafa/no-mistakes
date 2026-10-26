@@ -15,7 +15,7 @@
 // against it. The package's types tie each provider to the APIs it implements, so a
 // model with an API its provider lacks is a type error.
 //
-// Only the latest release on npm is checked. If it is older than
+// Only the latest release on npm is checked. An unpublished package has no release to check. If it is older than
 // MINIMUM_PI_VERSION, no released no-mistakes client receives the catalog, and the check is skipped.
 //
 // Usage: node scripts/check-model-catalog-compat.mjs [--catalog <file>]
@@ -76,7 +76,27 @@ function main() {
 	const { values } = parseArgs({ options: { catalog: { type: "string" } } });
 	const catalogPath = resolve(values.catalog ?? join(root, ".artifacts/model-catalog/models.all.json"));
 
-	const release = run("npm", ["view", NO_MISTAKES_AI_PACKAGE, "version"], root).trim();
+	const releaseQuery = spawnSync("npm", ["view", NO_MISTAKES_AI_PACKAGE, "version", "--json"], {
+		cwd: root,
+		encoding: "utf8",
+		stdio: ["ignore", "pipe", "pipe"],
+	});
+	if (releaseQuery.error) throw releaseQuery.error;
+	let metadata;
+	try {
+		metadata = JSON.parse(releaseQuery.stdout);
+	} catch {
+		throw new Error(`Could not read the latest published release: ${releaseQuery.stderr || releaseQuery.stdout}`);
+	}
+	if (releaseQuery.status !== 0) {
+		if (metadata?.error?.code === "E404") {
+			console.log(`Skipped: ${NO_MISTAKES_AI_PACKAGE} has no published release to check.`);
+			return;
+		}
+		throw new Error(`Could not read the latest published release: ${releaseQuery.stdout}\n${releaseQuery.stderr}`);
+	}
+	if (typeof metadata !== "string" || !metadata.trim()) throw new Error("npm returned an invalid release version");
+	const release = metadata.trim();
 	if (compareModelCatalogPiVersions(release, MINIMUM_PI_VERSION) < 0) {
 		console.log(
 			`Skipped: the latest release ${release} is older than MINIMUM_PI_VERSION ${MINIMUM_PI_VERSION}, so no released no-mistakes client receives this catalog.`,
