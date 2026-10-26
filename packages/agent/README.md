@@ -1,19 +1,19 @@
-# @earendil-works/pi-agent-core
+# @no-mistakes/agent-core
 
-Stateful agent with tool execution and event streaming. Built on `@earendil-works/pi-ai`.
+Stateful agent with tool execution and event streaming. Built on `@no-mistakes/ai`.
 
 ## Installation
 
 ```bash
-npm install @earendil-works/pi-agent-core
+npm install @no-mistakes/agent-core
 ```
 
 ## Quick Start
 
 ```typescript
-import { Agent } from "@earendil-works/pi-agent-core";
-import { createModels } from "@earendil-works/pi-ai";
-import { anthropicProvider } from "@earendil-works/pi-ai/providers/anthropic";
+import { Agent } from "@no-mistakes/agent-core";
+import { createModels } from "@no-mistakes/ai";
+import { anthropicProvider } from "@no-mistakes/ai/providers/anthropic";
 
 const models = createModels();
 models.setProvider(anthropicProvider());
@@ -233,7 +233,7 @@ const agent = new Agent({
   sessionId: "session-123",
 
   // How requests identify the app to providers (pi-ai ClientIdentity), merged over
-  // DEFAULT_AGENT_IDENTITY ({ attribution: PI_ATTRIBUTION }: provider attribution headers name pi).
+  // DEFAULT_AGENT_IDENTITY ({ attribution: NO_MISTAKES_ATTRIBUTION }: provider attribution headers name pi).
   // Pass your app's attribution, or null to send none.
   identity: { attribution: { name: "my-app", url: "https://my-app.example" } },
 
@@ -431,7 +431,7 @@ Follow-up messages are checked only when there are no more tool calls and no ste
 Extend `AgentMessage` via declaration merging:
 
 ```typescript
-declare module "@earendil-works/pi-agent-core" {
+declare module "@no-mistakes/agent-core" {
   interface CustomAgentMessages {
     notification: { role: "notification"; text: string; timestamp: number };
   }
@@ -510,14 +510,14 @@ Return `terminate: true` from `execute()`, a blocked `beforeToolCall`, or `after
 
 ### MCP and Codemode
 
-`@earendil-works/pi-mcp` connects to MCP servers and `@earendil-works/pi-codemode` runs model-written JavaScript that calls tools. [examples/mcp-codemode](examples/mcp-codemode) wraps both as `AgentTool`s: one tool per MCP tool, and a `codemode` tool whose scripts call the agent's tools through `runToolCall()`, so `beforeToolCall` and `afterToolCall` apply to those calls too.
+`@no-mistakes/mcp` connects to MCP servers and `@no-mistakes/codemode` runs model-written JavaScript that calls tools. [examples/mcp-codemode](examples/mcp-codemode) wraps both as `AgentTool`s: one tool per MCP tool, and a `codemode` tool whose scripts call the agent's tools through `runToolCall()`, so `beforeToolCall` and `afterToolCall` apply to those calls too.
 
 ## Proxy Usage
 
 For browser apps that proxy through a backend:
 
 ```typescript
-import { Agent, streamProxy } from "@earendil-works/pi-agent-core";
+import { Agent, streamProxy } from "@no-mistakes/agent-core";
 
 const agent = new Agent({
   streamFn: (model, context, options) =>
@@ -534,7 +534,7 @@ const agent = new Agent({
 For direct control without the Agent class:
 
 ```typescript
-import { agentLoop, agentLoopContinue } from "@earendil-works/pi-agent-core";
+import { agentLoop, agentLoopContinue } from "@no-mistakes/agent-core";
 
 const context: AgentContext = {
   messages: [{ role: "system", content: "You are helpful.", timestamp: Date.now() }],

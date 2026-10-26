@@ -1,95 +1,72 @@
-<p align="center">
-  <a href="https://pi.dev">
-    <img alt="Pi logo" src="https://pi.dev/logo-auto.svg" width="128">
-  </a>
-</p>
-<p align="center">
-  <a href="https://discord.com/invite/3cU7Bz4UPx"><img alt="Discord" src="https://img.shields.io/badge/discord-community-5865F2?style=flat-square&logo=discord&logoColor=white" /></a>
-  <a href="https://www.npmjs.com/package/@earendil-works/pi-coding-agent"><img alt="npm" src="https://img.shields.io/npm/v/@earendil-works/pi-coding-agent?style=flat-square&logo=npm&logoColor=white" /></a>
-</p>
+# no-mistakes coding agent
 
-> New issues and PRs from new contributors are closed automatically. Maintainers review closed submissions daily. See [CONTRIBUTING.md](https://github.com/earendil-works/pi/blob/main/CONTRIBUTING.md).
+> Stop telling your agent to "make no mistakes." Now it's built-in.
 
-# Pi
+The `no-mistakes` coding agent is a minimal, extensible terminal agent with interactive, print, JSON, and RPC modes. Extend it with TypeScript extensions, skills, prompt templates, themes, and packages.
 
-Pi is a minimal, extensible agent harness that you can make your own.
+## Install
 
-Adapt Pi to your workflows, not the other way around. Customize Pi with [extensions](docs/extensions.md), [skills](docs/skills.md), [prompt templates](docs/prompt-templates.md), and [themes](docs/themes.md). Bundle them as [Pi packages](docs/packages.md) and share via npm or git.
-
-Pi ships with powerful defaults but skips features like sub-agents and plan mode. Ask Pi to build what you want, or install a package that does it your way.
-
-Use Pi [interactively](docs/usage.md), automate it in [print or JSON mode](docs/cli.md), control it over [RPC](docs/rpc.md), or build apps with the [Pi TypeScript SDK](docs/sdk.md). See [OpenClaw](https://github.com/OpenClaw/OpenClaw) for a real-world integration.
-
-## Getting started
-
-Install the command-line interface:
+Install the CLI from npm:
 
 ```bash
-curl -fsSL https://pi.dev/install.sh | sh
+npm install -g --ignore-scripts @no-mistakes/coding-agent
 ```
 
-On Windows:
+Node.js 22.19 or newer is required. The package installs the `no-mistakes` command and does not require dependency lifecycle scripts for a normal installation.
 
-```shell
-powershell -c "irm https://pi.dev/install.ps1 | iex"
-```
+Standalone macOS, Linux, and Windows binaries are also published as GitHub Release assets.
 
-The installer pins all dependencies and updates Pi with `pi update`. Alternatively, install directly with npm, which does not pin transitive dependencies:
+## Sign in
 
 ```bash
-npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+no-mistakes auth login
+no-mistakes auth login anthropic
 ```
 
-Pi requires Node.js 22.19 or newer. The macOS, Linux, and Windows installers can install it if needed. Pi does not require dependency lifecycle scripts for a normal npm installation.
+The command prompts for the provider and authentication method, handles OAuth URLs, device codes, and manual codes, and saves credentials to `~/.no-mistakes/agent/auth.json`. You do not need to export environment variables.
 
-On macOS and Linux, Nix users can install the latest release with `nix profile add github:earendil-works/pi/stable`. See the [quickstart](docs/quickstart.md#1-install-pi) for updating and pinning releases.
+Existing provider environment variables such as `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, and `GEMINI_API_KEY` are also supported. Use `no-mistakes auth --help` for login and credential-check commands.
 
-Start Pi in the directory where you want it to work:
+## Run
 
 ```bash
 cd /path/to/project
-pi
+no-mistakes
 ```
 
-For a built-in AI provider, run `/login` inside Pi to connect a subscription or API key. Then give Pi a task.
+Then enter a task, or run one task and exit:
 
-See the [documentation](docs/index.md) for full setup and usage instructions.
+```bash
+no-mistakes -p "Fix the failing test"
+```
 
-## Share your OSS coding agent sessions
+Use `no-mistakes --help` for quick-start examples, authentication and provider setup, and core options grouped by models, execution, sessions, tools, and resources. Select a model with `--model`, continue the previous session with `--continue`, or resume a specific session with `--session <path|id>`.
 
-If you use Pi for open source work, please share your coding agent sessions.
+Global configuration is stored under `~/.no-mistakes/`. Project-local extensions, skills, prompts, and themes belong under `.no-mistakes/` in the repository. Application-owned environment variables use the `NO_MISTAKES_` prefix; legacy `.pi` directories and `PI_*` aliases are not supported.
 
-Public OSS session data helps improve models, prompts, tools, and evaluations using real development workflows.
+## Extend
 
-For the full explanation, see [this post on X](https://x.com/badlogicgames/status/2037811643774652911).
-
-To publish sessions, use [`badlogic/pi-share-hf`](https://github.com/badlogic/pi-share-hf) using a Hugging Face account and the Hugging Face CLI.
-
-- [Demo video](https://x.com/badlogicgames/status/2041151967695634619) on how to publish Pi sessions
-- Published Pi development sessions: [`badlogicgames/pi-mono` on Hugging Face](https://huggingface.co/datasets/badlogicgames/pi-mono).
+- [Extensions](docs/extensions.md)
+- [Skills](docs/skills.md)
+- [Prompt templates](docs/prompt-templates.md)
+- [Themes](docs/themes.md)
+- [Packages](docs/packages.md)
+- [TypeScript SDK](docs/sdk.md)
+- [RPC integration](docs/rpc.md)
 
 ## Development
 
-Clone the repository, install its dependencies, and run Pi from source:
+From the repository root:
 
 ```bash
-git clone https://github.com/earendil-works/pi
-cd pi
 npm install --ignore-scripts
-./pi-test.sh
-```
-
-`pi-test.sh` can be called from any directory and preserves the caller's working directory.
-
-Before submitting changes, run:
-
-```bash
+npm run build
 npm run check
 ./test.sh
 ```
 
-Read [CONTRIBUTING.md](https://github.com/earendil-works/pi/blob/main/CONTRIBUTING.md) before opening an issue or pull request. It defines the contribution gate, issue quality bar, and required checks. Read [AGENTS.md](https://github.com/earendil-works/pi/blob/main/AGENTS.md) for repository-specific implementation, testing, dependency, and release rules.
+Read [CONTRIBUTING.md](https://github.com/meedoomostafa/no-mistakes/blob/main/CONTRIBUTING.md) before opening an issue or pull request.
 
 ## License
 
-MIT
+MIT. See [LICENSE](../../LICENSE).
