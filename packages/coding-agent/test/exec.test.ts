@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { execCommand } from "../src/core/exec.ts";
 
 describe("execCommand", () => {
-	// Regression test for https://github.com/earendil-works/pi/issues/11085
+	// Regression test for https://github.com/meedoomostafa/no-mistakes/issues/11085
 	it("reports spawn errors in stderr", async () => {
 		const result = await execCommand("pi-command-that-does-not-exist-11085", [], process.cwd());
 

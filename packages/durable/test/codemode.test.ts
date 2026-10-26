@@ -1,9 +1,9 @@
 import { mkdtemp, readdir, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import type { Context } from "@earendil-works/chord";
-import { type AssistantMessage, fauxAssistantMessage, fauxText, fauxToolCall, Type } from "@earendil-works/pi-ai";
-import { type CodemodeRun, CodemodeSandbox } from "@earendil-works/pi-codemode";
+import { type AssistantMessage, fauxAssistantMessage, fauxText, fauxToolCall, Type } from "@no-mistakes/ai";
+import type { Context } from "@no-mistakes/chord";
+import { type CodemodeRun, CodemodeSandbox } from "@no-mistakes/codemode";
 import {
 	defineTool,
 	type Harness,
@@ -12,7 +12,7 @@ import {
 	ToolResultEntry,
 	ToolTask,
 	type ToolTaskInput,
-} from "@earendil-works/pi-durable";
+} from "@no-mistakes/durable";
 import { afterEach, describe, expect, it } from "vitest";
 import {
 	type CodemodeGlobal,

@@ -1,4 +1,4 @@
-import type { AuthInfoLink, OAuthDeviceCodeInfo } from "@earendil-works/pi-ai";
+import type { AuthInfoLink, OAuthDeviceCodeInfo } from "@no-mistakes/ai";
 import {
 	Container,
 	type Focusable,
@@ -8,7 +8,7 @@ import {
 	Text,
 	TruncatedText,
 	type TUI,
-} from "@earendil-works/pi-tui";
+} from "@no-mistakes/tui";
 import { copyToClipboard } from "../../../utils/clipboard.ts";
 import { openBrowser } from "../../../utils/open-browser.ts";
 import { theme } from "../theme/theme.ts";
@@ -30,6 +30,7 @@ export class LoginDialogComponent extends Container implements Focusable {
 	private inputRejecter?: (error: Error) => void;
 	private deviceCodeAction?: { info: OAuthDeviceCodeInfo; hint: Container };
 	private deviceCodeHint?: Container;
+	private inputIsSecret = false;
 	private onComplete: (success: boolean, message?: string) => void;
 
 	// Focusable implementation - propagate to input for IME cursor positioning
@@ -71,7 +72,9 @@ export class LoginDialogComponent extends Container implements Focusable {
 		this.input.onSubmit = () => {
 			if (this.inputResolver) {
 				const value = this.input.getValue();
-				this.replaceInputWithSubmittedText(value);
+				const secret = this.inputIsSecret;
+				this.input.reset();
+				this.replaceInputWithSubmittedText(value, secret);
 				this.inputResolver(value);
 				this.inputResolver = undefined;
 				this.inputRejecter = undefined;
@@ -89,9 +92,10 @@ export class LoginDialogComponent extends Container implements Focusable {
 		return this.abortController.signal;
 	}
 
-	private replaceInputWithSubmittedText(value: string): void {
+	private replaceInputWithSubmittedText(value: string, secret: boolean): void {
+		const displayedValue = secret ? "•".repeat([...value].length) : value;
 		this.contentContainer.children = this.contentContainer.children.map((child) =>
-			child === this.input ? new Text(`> ${value}`, 0, 0) : child,
+			child === this.input ? new Text(`> ${displayedValue}`, 0, 0) : child,
 		);
 	}
 
@@ -201,7 +205,9 @@ export class LoginDialogComponent extends Container implements Focusable {
 	 */
 	showManualInput(prompt: string): Promise<string> {
 		this.clearDeviceCodeAction();
-		this.input.setValue("");
+		this.inputIsSecret = false;
+		this.input.setMask(undefined);
+		this.input.reset();
 		this.contentContainer.addChild(new Spacer(1));
 		this.contentContainer.addChild(new Text(theme.fg("dim", prompt), 1, 0));
 		this.contentContainer.addChild(this.input);
@@ -220,6 +226,8 @@ export class LoginDialogComponent extends Container implements Focusable {
 	 */
 	showPrompt(message: string, placeholder?: string): Promise<string> {
 		this.clearDeviceCodeAction();
+		this.inputIsSecret = false;
+		this.input.setMask(undefined);
 		this.contentContainer.addChild(new Spacer(1));
 		this.contentContainer.addChild(new Text(theme.fg("text", message), 1, 0));
 		if (placeholder) {
@@ -234,7 +242,32 @@ export class LoginDialogComponent extends Container implements Focusable {
 			),
 		);
 
-		this.input.setValue("");
+		this.input.reset();
+		this.tui.requestRender();
+
+		return new Promise((resolve, reject) => {
+			this.inputResolver = resolve;
+			this.inputRejecter = reject;
+		});
+	}
+
+	/** Show a masked input for credentials such as API keys. */
+	showSecretPrompt(message: string): Promise<string> {
+		this.clearDeviceCodeAction();
+		this.inputIsSecret = true;
+		this.input.setMask("•");
+		this.contentContainer.addChild(new Spacer(1));
+		this.contentContainer.addChild(new Text(theme.fg("text", message), 1, 0));
+		this.contentContainer.addChild(this.input);
+		this.contentContainer.addChild(
+			new Text(
+				`(${keyHint("tui.select.cancel", "to cancel,")} ${keyHint("tui.select.confirm", "to submit")})`,
+				1,
+				0,
+			),
+		);
+
+		this.input.reset();
 		this.tui.requestRender();
 
 		return new Promise((resolve, reject) => {

@@ -1,7 +1,7 @@
-name: pi-env daemons
+name: no-mistakes-env daemons
 
-# Builds the pi-env daemon for every remote system @earendil-works/pi-env supports, on native runners, as artifacts
-# named pi-env-<platform>-<arch>. Build Binaries calls this before publishing npm packages; the Environments workflow
+# Builds the no-mistakes-env daemon for every remote system @no-mistakes/env supports, on native runners, as artifacts
+# named no-mistakes-env-<platform>-<arch>. Build Binaries calls this before publishing npm packages; the Environments workflow
 # calls it to test the release builds on every change.
 on:
   workflow_call:
@@ -70,20 +70,20 @@ jobs:
         run: |
           suffix=""
           case "${{ matrix.target }}" in *windows*) suffix=".exe" ;; esac
-          mkdir -p "$GITHUB_WORKSPACE/pi-env-${{ matrix.name }}"
-          cp "target/${{ matrix.target }}/release/pi-env$suffix" "$GITHUB_WORKSPACE/pi-env-${{ matrix.name }}/pi-env$suffix"
-          ls -l "$GITHUB_WORKSPACE/pi-env-${{ matrix.name }}"
+          mkdir -p "$GITHUB_WORKSPACE/no-mistakes-env-${{ matrix.name }}"
+          cp "target/${{ matrix.target }}/release/no-mistakes-env$suffix" "$GITHUB_WORKSPACE/no-mistakes-env-${{ matrix.name }}/no-mistakes-env$suffix"
+          ls -l "$GITHUB_WORKSPACE/no-mistakes-env-${{ matrix.name }}"
 
       - name: Run the native build
         if: ${{ !matrix.android && !(matrix.target == 'x86_64-apple-darwin') }}
         run: |
           suffix=""
           case "${{ matrix.target }}" in *windows*) suffix=".exe" ;; esac
-          "$GITHUB_WORKSPACE/pi-env-${{ matrix.name }}/pi-env$suffix" --version
+          "$GITHUB_WORKSPACE/no-mistakes-env-${{ matrix.name }}/no-mistakes-env$suffix" --version
 
       - name: Upload
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: pi-env-${{ matrix.name }}
-          path: pi-env-${{ matrix.name }}
+          name: no-mistakes-env-${{ matrix.name }}
+          path: no-mistakes-env-${{ matrix.name }}
           if-no-files-found: error

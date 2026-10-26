@@ -1,9 +1,10 @@
 // Per-conversation agent choices and Harness-wide settings.
 // Run from packages/durable:
 //   node --conditions=source --experimental-strip-types test/examples/06-configuration.ts
-import { BACKGROUND_CONTEXT } from "@earendil-works/chord/context";
-import { Type } from "@earendil-works/pi-ai";
-import { createModels } from "@earendil-works/pi-ai/models";
+
+import { Type } from "@no-mistakes/ai";
+import { createModels } from "@no-mistakes/ai/models";
+import { BACKGROUND_CONTEXT } from "@no-mistakes/chord/context";
 import {
 	AgentDoc,
 	createRegistry,

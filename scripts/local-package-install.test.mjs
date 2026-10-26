@@ -147,7 +147,7 @@ test("installs a package as the only direct dependency", (t) => {
 	writeFileSync(installedManifestPath, JSON.stringify(installedManifest));
 	assert.throws(
 		() => smokeTestNpmConsumer({ artifactSet, directory: consumerDirectory, packageName: "@pi-package-test/target" }),
-		/Public Pi package @pi-package-test\/target must declare a string main field/,
+		/Public no-mistakes package @pi-package-test\/target must declare a string main field/,
 	);
 	writeFileSync(installedManifestPath, installedManifestContents);
 	const lockPath = join(consumerDirectory, "package-lock.json");

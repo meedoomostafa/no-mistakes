@@ -1,6 +1,5 @@
 import { GCProfiler, getHeapStatistics, setFlagsFromString } from "node:v8";
 import { runInNewContext } from "node:vm";
-import type { Draft } from "@earendil-works/chord";
 import {
 	type AssistantMessage,
 	type FauxResponseStep,
@@ -9,7 +8,8 @@ import {
 	fauxThinking,
 	fauxToolCall,
 	Type,
-} from "@earendil-works/pi-ai";
+} from "@no-mistakes/ai";
+import type { Draft } from "@no-mistakes/chord";
 import {
 	AgentDoc,
 	type AgentEvent,
@@ -24,7 +24,7 @@ import {
 	type SnapshotEvent,
 	UsageDoc,
 	watchEvents,
-} from "@earendil-works/pi-durable";
+} from "@no-mistakes/durable";
 import { describe, expect, it } from "vitest";
 import { type ChatSetup, chatSetup, openChat, textOf, waitFor } from "./chat-support.ts";
 import { addTool } from "./harness-support.ts";

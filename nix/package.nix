@@ -17,20 +17,20 @@
 let
   nodejs = nodejs_22;
   packageJson = lib.importJSON (source + "/packages/coding-agent/package.json");
-  # Lockfile root used by the pi.dev installer. It pins the coding agent's
+  # Lockfile root used for packaged installs. It pins the coding agent's
   # runtime dependency tree and is kept in sync with package-lock.json by
   # `npm run check`.
   installLock = source + "/packages/coding-agent/install-lock";
   modelCatalogPin = lib.importJSON ./model-catalog.json;
   modelCatalog = fetchurl {
-    name = "pi-model-catalog.json";
+    name = "no-mistakes-model-catalog.json";
     # The typed catalog is the representation whose bytes the revision hashes.
     url = "https://pi.dev/api/models/revisions/${modelCatalogPin.revision}?types=chat,image,classifier";
     sha256 = lib.removePrefix "sha256-" modelCatalogPin.revision;
   };
 
   workspacePackages = stdenv.mkDerivation {
-    pname = "pi-workspace-packages";
+    pname = "no-mistakes-workspace-packages";
     inherit (packageJson) version;
     src = source;
 
@@ -79,18 +79,18 @@ let
     # The install lock points internal packages at registry releases. Replace
     # them with the packages built from this checkout.
     packageSourceOverrides = {
-      "node_modules/@earendil-works/pi-agent-core" = workspacePackages + "/agent.tgz";
-      "node_modules/@earendil-works/pi-ai" = workspacePackages + "/ai.tgz";
-      "node_modules/@earendil-works/pi-codemode" = workspacePackages + "/codemode.tgz";
-      "node_modules/@earendil-works/pi-coding-agent" = workspacePackages + "/coding-agent.tgz";
-      "node_modules/@earendil-works/pi-mcp" = workspacePackages + "/mcp.tgz";
-      "node_modules/@earendil-works/pi-telemetry" = workspacePackages + "/telemetry.tgz";
-      "node_modules/@earendil-works/pi-tui" = workspacePackages + "/tui.tgz";
+      "node_modules/@no-mistakes/agent-core" = workspacePackages + "/agent.tgz";
+      "node_modules/@no-mistakes/ai" = workspacePackages + "/ai.tgz";
+      "node_modules/@no-mistakes/codemode" = workspacePackages + "/codemode.tgz";
+      "node_modules/@no-mistakes/coding-agent" = workspacePackages + "/coding-agent.tgz";
+      "node_modules/@no-mistakes/mcp" = workspacePackages + "/mcp.tgz";
+      "node_modules/@no-mistakes/telemetry" = workspacePackages + "/telemetry.tgz";
+      "node_modules/@no-mistakes/tui" = workspacePackages + "/tui.tgz";
     };
   };
 in
 stdenv.mkDerivation {
-  pname = "pi";
+  pname = "no-mistakes";
   inherit (packageJson) version;
   src = installLock;
   inherit npmDeps;
@@ -115,15 +115,15 @@ stdenv.mkDerivation {
   installPhase = ''
     runHook preInstall
 
-    mkdir -p "$out/lib/pi" "$out/bin"
-    cp -R . "$out/lib/pi"
+    mkdir -p "$out/lib/no-mistakes" "$out/bin"
+    cp -R . "$out/lib/no-mistakes"
 
-    # The wrapper runs Pi with an absolute Node path. Node is only on PATH so Pi can
+    # The wrapper runs no-mistakes with an absolute Node path. Node is only on PATH so no-mistakes can
     # find npm for package installs; append it so that shells started by the
     # bash tool keep the user's node/npm (e.g. from mise or nvm). fd, ripgrep,
-    # and the clipboard tools are Pi's own dependencies and take precedence.
-    makeWrapper ${nodejs}/bin/node "$out/bin/pi" \
-      --add-flags "$out/lib/pi/node_modules/@earendil-works/pi-coding-agent/dist/bundle/cli.js" \
+    # and the clipboard tools are no-mistakes' own dependencies and take precedence.
+    makeWrapper ${nodejs}/bin/node "$out/bin/no-mistakes" \
+      --add-flags "$out/lib/no-mistakes/node_modules/@no-mistakes/coding-agent/dist/bundle/cli.js" \
       --suffix PATH : ${lib.makeBinPath [ nodejs ]} \
       --prefix PATH : ${
         lib.makeBinPath (
@@ -144,28 +144,28 @@ stdenv.mkDerivation {
   doInstallCheck = true;
   installCheckPhase = ''
     runHook preInstallCheck
-    test "$("$out/bin/pi" --version)" = "${packageJson.version}"
+    test "$("$out/bin/no-mistakes" --version)" = "${packageJson.version}"
     # Load host-platform TUI helpers directly so missing native dependencies
     # fail the build rather than silently disabling clipboard support.
     ${nodejs}/bin/node -e \
       "const fs = require('node:fs');
        const path = require('node:path');
-       const dir = '$out/lib/pi/node_modules/@earendil-works/pi-tui/native/' + process.platform + '/prebuilds/' + process.platform + '-' + process.arch;
+       const dir = '$out/lib/no-mistakes/node_modules/@no-mistakes/tui/native/' + process.platform + '/prebuilds/' + process.platform + '-' + process.arch;
        if (fs.existsSync(dir)) {
          for (const file of fs.readdirSync(dir)) {
            if (file.endsWith('.node')) require(path.join(dir, file));
          }
        }"
     ${nodejs}/bin/node -e \
-      "require('$out/lib/pi/node_modules/@silvia-odwyer/photon-node')"
+      "require('$out/lib/no-mistakes/node_modules/@silvia-odwyer/photon-node')"
     runHook postInstallCheck
   '';
 
   meta = {
     description = packageJson.description;
-    homepage = "https://pi.dev";
+    homepage = "https://github.com/meedoomostafa/no-mistakes";
     license = lib.licenses.mit;
-    mainProgram = "pi";
+    mainProgram = "no-mistakes";
     platforms = [
       "aarch64-darwin"
       "aarch64-linux"

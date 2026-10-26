@@ -12,10 +12,10 @@ export default defineConfig({
 	resolve: {
 		conditions: ["source"],
 		alias: [
-			{ find: /^@earendil-works\/pi-durable$/, replacement: source("../src/index.ts") },
-			{ find: /^@earendil-works\/pi-durable\/testing$/, replacement: source("../src/testing/index.ts") },
+			{ find: /^@no-mistakes\/durable$/, replacement: source("../src/index.ts") },
+			{ find: /^@no-mistakes\/durable\/testing$/, replacement: source("../src/testing/index.ts") },
 			{
-				find: /^@earendil-works\/pi-durable\/storage\/sqlite\/cloudflare$/,
+				find: /^@no-mistakes\/durable\/storage\/sqlite\/cloudflare$/,
 				replacement: source("../src/storage/sqlite/cloudflare.ts"),
 			},
 		],

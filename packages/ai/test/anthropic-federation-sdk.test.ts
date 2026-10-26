@@ -8,7 +8,7 @@ import { normalizeContext } from "../src/utils/transcript.ts";
 
 // Runs the real Anthropic SDK against a fake fetch to check how often the
 // workload identity federation token exchange happens.
-// https://github.com/earendil-works/pi/issues/10177
+// https://github.com/meedoomostafa/no-mistakes/issues/10177
 
 function sseResponse(): Response {
 	const body = [

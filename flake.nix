@@ -1,11 +1,11 @@
 {
-  description = "Pi coding agent";
+  description = "no-mistakes coding agent";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     # nixpkgs unstable no longer supports Intel macOS. Keep using the final
-    # Darwin branch that does so for pi's x86_64-darwin package.
+    # Darwin branch that does so for no-mistakes' x86_64-darwin package.
     nixpkgs-darwin-x64.url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
 
   };
@@ -35,20 +35,20 @@
     {
       packages = forAllSystems (system: {
         default = packageFor system;
-        pi = packageFor system;
+        no-mistakes = packageFor system;
       });
 
       apps = forAllSystems (system: {
         default = {
           type = "app";
-          program = "${self.packages.${system}.default}/bin/pi";
-          meta.description = "Pi coding agent";
+          program = "${self.packages.${system}.default}/bin/no-mistakes";
+          meta.description = "no-mistakes coding agent";
         };
-        pi = self.apps.${system}.default;
+        no-mistakes = self.apps.${system}.default;
       });
 
       overlays.default = final: _previous: {
-        pi = final.callPackage ./nix/package.nix { source = self; };
+        no-mistakes = final.callPackage ./nix/package.nix { source = self; };
       };
     };
 }

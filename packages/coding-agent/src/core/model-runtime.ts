@@ -56,9 +56,9 @@ import {
 	type ProviderRequestOptions,
 	type SimpleStreamOptions,
 	type StreamOptions,
-} from "@earendil-works/pi-ai";
-import * as builtinProviderCatalog from "@earendil-works/pi-ai/providers/all";
-import { personalizeOpenRouterCatalog } from "@earendil-works/pi-ai/providers/openrouter";
+} from "@no-mistakes/ai";
+import * as builtinProviderCatalog from "@no-mistakes/ai/providers/all";
+import { personalizeOpenRouterCatalog } from "@no-mistakes/ai/providers/openrouter";
 import {
 	assertChatModel,
 	assertClassifierInputSupported,
@@ -66,7 +66,7 @@ import {
 	assertImageModel,
 	classifierErrorResult,
 	imageErrorResult,
-} from "@earendil-works/pi-ai/utils/model-operations";
+} from "@no-mistakes/ai/utils/model-operations";
 import { getAgentDir } from "../config.ts";
 import { operationSignal, raceWithAbortSignal } from "../utils/abort.ts";
 import { AuthStorage as DefaultAuthStorage } from "./auth-storage.ts";
@@ -170,7 +170,7 @@ function mergeHeaders(
 	return merged;
 }
 
-/** Configured pi-ai Models collection used by coding-agent and SDK consumers. */
+/** Configured @no-mistakes/ai Models collection used by coding-agent and SDK consumers. */
 export class ModelRuntime implements Models {
 	private readonly models: MutableModels;
 	private readonly credentials: RuntimeCredentials;
@@ -245,7 +245,7 @@ export class ModelRuntime implements Models {
 			modelsPath,
 			modelsStore,
 			providers,
-			process.env.PI_OFFLINE === undefined,
+			process.env.NO_MISTAKES_OFFLINE === undefined,
 		);
 		runtime.configureRadiusProviders();
 		runtime.rebuildProviders();
@@ -866,7 +866,7 @@ export class ModelRuntime implements Models {
 			...options,
 			allowNetwork: options.allowNetwork ?? this.modelNetworkEnabled,
 		};
-		// Published pi-ai builds before ModelsStore returned void and accepted a provider ID.
+		// Published AI-package builds before ModelsStore returned void and accepted a provider ID.
 		// The fallback keeps source-mode CLI tests working without rebuilding workspace dependencies.
 		const result = ((await this.models.refresh(refreshOptions)) as ModelsRefreshResult | undefined) ?? {
 			aborted: refreshOptions.signal?.aborted ?? false,

@@ -1,6 +1,6 @@
-import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
-import type { Model } from "@earendil-works/pi-ai";
-import type { ScrollViewScrollbar, TerminalCapabilities, WheelScrollLines } from "@earendil-works/pi-tui";
+import type { ThinkingLevel } from "@no-mistakes/agent-core";
+import type { Model } from "@no-mistakes/ai";
+import type { ScrollViewScrollbar, TerminalCapabilities, WheelScrollLines } from "@no-mistakes/tui";
 import { randomUUID } from "crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
@@ -1045,16 +1045,6 @@ export class SettingsManager {
 		this.save();
 	}
 
-	getEnableInstallTelemetry(): boolean {
-		return this.settings.enableInstallTelemetry ?? SETTINGS_DEFAULTS.enableInstallTelemetry;
-	}
-
-	setEnableInstallTelemetry(enabled: boolean): void {
-		this.globalSettings.enableInstallTelemetry = enabled;
-		this.markModified("enableInstallTelemetry");
-		this.save();
-	}
-
 	getEnableAnalytics(): boolean {
 		return this.settings.enableAnalytics ?? SETTINGS_DEFAULTS.enableAnalytics;
 	}
@@ -1227,7 +1217,7 @@ export class SettingsManager {
 		if (this.settings.terminal?.clearOnShrink !== undefined) {
 			return this.settings.terminal.clearOnShrink;
 		}
-		if (process.env.PI_CLEAR_ON_SHRINK === "1") return true;
+		if (process.env.NO_MISTAKES_CLEAR_ON_SHRINK === "1") return true;
 		return SETTINGS_DEFAULTS.terminal.clearOnShrink;
 	}
 
@@ -1376,7 +1366,7 @@ export class SettingsManager {
 	}
 
 	getShowHardwareCursor(): boolean {
-		return this.settings.showHardwareCursor ?? process.env.PI_HARDWARE_CURSOR === "1";
+		return this.settings.showHardwareCursor ?? process.env.NO_MISTAKES_HARDWARE_CURSOR === "1";
 	}
 
 	setShowHardwareCursor(enabled: boolean): void {

@@ -1,7 +1,6 @@
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { JsonValue } from "@earendil-works/chord";
 import {
 	type AssistantMessage,
 	type FauxResponseStep,
@@ -12,7 +11,8 @@ import {
 	type SystemMessage,
 	type ToolResultMessage,
 	Type,
-} from "@earendil-works/pi-ai";
+} from "@no-mistakes/ai";
+import type { JsonValue } from "@no-mistakes/chord";
 import {
 	AgentDoc,
 	type Conversation,
@@ -31,7 +31,7 @@ import {
 	type ToolRegistration,
 	ToolResultEntry,
 	ToolTask,
-} from "@earendil-works/pi-durable";
+} from "@no-mistakes/durable";
 import { describe, expect, it } from "vitest";
 import { NodeExecutionEnv } from "../src/env/node.ts";
 import { createBashTool, createEditTool, createReadTool } from "../src/tools/index.ts";

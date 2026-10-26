@@ -3,15 +3,15 @@ import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { renderToolOutputType } from "@earendil-works/pi-codemode/declarations";
+import { renderToolOutputType } from "@no-mistakes/codemode/declarations";
 import {
 	type JsonRpcMessage,
 	LATEST_PROTOCOL_VERSION,
 	McpAuthRequiredError,
 	McpHttpError,
 	McpSessionExpiredError,
-} from "@earendil-works/pi-mcp";
-import { createInMemoryTransportPair, type InMemoryTransport } from "@earendil-works/pi-mcp/testing";
+} from "@no-mistakes/mcp";
+import { createInMemoryTransportPair, type InMemoryTransport } from "@no-mistakes/mcp/testing";
 import { afterEach, describe, expect, it } from "vitest";
 import { InMemoryAuthStorageBackend } from "../src/core/auth-storage.ts";
 import { truncateMiddle } from "../src/core/tools/truncate.ts";
@@ -47,9 +47,9 @@ describe("MCP config", () => {
 		const agentDir = join(root, "agent");
 		const cwd = join(root, "project");
 		mkdirSync(agentDir, { recursive: true });
-		mkdirSync(join(cwd, ".pi"), { recursive: true });
+		mkdirSync(join(cwd, ".no-mistakes"), { recursive: true });
 		writeFileSync(join(agentDir, "mcp.json"), JSON.stringify(global));
-		writeFileSync(join(cwd, ".pi", "mcp.json"), JSON.stringify(project));
+		writeFileSync(join(cwd, ".no-mistakes", "mcp.json"), JSON.stringify(project));
 		return { agentDir, cwd };
 	}
 
@@ -94,7 +94,7 @@ describe("MCP config", () => {
 			// An override cannot change the command, which would run with the global env.
 			{ mcpServers: { tools: { enabled: false, args: ["y"] }, missing: { enabled: false } } },
 		);
-		const project = join(paths.cwd, ".pi", "mcp.json");
+		const project = join(paths.cwd, ".no-mistakes", "mcp.json");
 		const { servers, errors } = loadMcpConfig({ ...paths, projectTrusted: true });
 		expect(servers.map((server) => [server.name, server.override, server.config])).toEqual([
 			["tools", undefined, { command: "x", env: { TOKEN: "secret" } }],
@@ -120,7 +120,7 @@ describe("MCP config", () => {
 	it("reads and edits mcp.json files that start with a UTF-8 BOM", () => {
 		const paths = setup({}, {});
 		const global = join(paths.agentDir, "mcp.json");
-		const project = join(paths.cwd, ".pi", "mcp.json");
+		const project = join(paths.cwd, ".no-mistakes", "mcp.json");
 		writeFileSync(global, '\uFEFF{"mcpServers":{"demo":{"command":"echo","enabled":false}}}\n');
 		writeFileSync(project, '\uFEFF{"mcpServers":{"local":{"command":"local-cmd"}}}\n');
 

@@ -16,11 +16,11 @@
  * the chosen model. Requests outside the agent loop, such as compaction summaries, go to Luna.
  *
  * Requires TypeSafe credentials (TYPESAFE_API_KEY) and an OpenAI Codex login.
- * Usage: pi -e ./jev-router.ts --model jev/auto
+ * Usage: no-mistakes -e ./jev-router.ts --model jev/auto
  */
 
-import type { Message } from "@earendil-works/pi-ai";
-import type { ExtensionAPI, ExtensionContext, ModelRoute, ModelRouteRequest } from "@earendil-works/pi-coding-agent";
+import type { Message } from "@no-mistakes/ai";
+import type { ExtensionAPI, ExtensionContext, ModelRoute, ModelRouteRequest } from "@no-mistakes/coding-agent";
 
 const PROVIDER = "openai-codex";
 const SOL = "gpt-5.6-sol";
@@ -87,8 +87,8 @@ async function choosePlanningModel(request: JevRequest, ctx: ExtensionContext): 
 	return answer?.type === "choice" && (answer.probabilities.complex ?? 0) >= 0.5 ? SOL : TERRA;
 }
 
-export default function (pi: ExtensionAPI) {
-	pi.registerVirtualModel<JevState>({
+export default function (api: ExtensionAPI) {
+	api.registerVirtualModel<JevState>({
 		provider: "jev",
 		id: "auto",
 		name: "Auto (Jev)",

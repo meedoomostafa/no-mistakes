@@ -1,6 +1,6 @@
-import { type Context, type JsonValue, NativeWatch, type WatchEnd } from "@earendil-works/chord";
-import type { Op, Path } from "@earendil-works/chord/delta";
-import type { AssistantMessage, Message, Usage } from "@earendil-works/pi-ai";
+import type { AssistantMessage, Message, Usage } from "@no-mistakes/ai";
+import { type Context, type JsonValue, NativeWatch, type WatchEnd } from "@no-mistakes/chord";
+import type { Op, Path } from "@no-mistakes/chord/delta";
 import type { ObservedCommit } from "../session/session.ts";
 import type {
 	CommitChange,

@@ -1,6 +1,6 @@
-import { type Context, type JsonValue, Watch } from "@earendil-works/chord";
-import { awaitWithContext, BACKGROUND_CONTEXT, withoutAbortSignal } from "@earendil-works/chord/context";
-import { type Op, PendingOps, track } from "@earendil-works/chord/delta";
+import { type Context, type JsonValue, Watch } from "@no-mistakes/chord";
+import { awaitWithContext, BACKGROUND_CONTEXT, withoutAbortSignal } from "@no-mistakes/chord/context";
+import { type Op, PendingOps, track } from "@no-mistakes/chord/delta";
 import {
 	type AnyDocToken,
 	addressId,

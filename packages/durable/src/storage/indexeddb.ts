@@ -1,7 +1,7 @@
 /// <reference lib="dom" />
 
-import type { Context, JsonValue } from "@earendil-works/chord";
-import { apply, type Op } from "@earendil-works/chord/delta";
+import type { Context, JsonValue } from "@no-mistakes/chord";
+import { apply, type Op } from "@no-mistakes/chord/delta";
 import { StorageRequestError } from "../errors.ts";
 import { idFromNumber, seqFromNumber } from "../ids.ts";
 import type {

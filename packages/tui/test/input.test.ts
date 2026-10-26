@@ -1,6 +1,7 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
 import { Input } from "../src/components/input.ts";
+import { CURSOR_MARKER } from "../src/tui.ts";
 import { stripTerminalSequences, visibleWidth } from "../src/utils.ts";
 
 describe("Input component", () => {
@@ -50,6 +51,51 @@ describe("Input component", () => {
 			input.handleInput("n");
 			const [populated] = input.render(20);
 			assert.strictEqual(stripTerminalSequences(populated ?? "").trimEnd(), "n");
+		});
+
+		it("masks the rendered value without changing the underlying value", () => {
+			const input = new Input({ mask: "•" });
+			input.setValue("secret");
+			input.focused = true;
+
+			const [line] = input.render(20);
+			assert.ok(line);
+			assert.ok(!line.includes("secret"));
+			assert.ok(stripTerminalSequences(line).includes("••••••"));
+			assert.strictEqual(input.getValue(), "secret");
+		});
+
+		it("positions the cursor after complete mask strings", () => {
+			for (const mask of ["**", "\u{1f512}", "a\u0301"]) {
+				const input = new Input({ mask });
+				input.focused = true;
+				input.handleInput("a\u0301bc");
+
+				const [line] = input.render(20);
+				assert.ok(line);
+				assert.strictEqual(stripTerminalSequences(line.split(CURSOR_MARKER)[0] ?? ""), `> ${mask.repeat(3)}`);
+			}
+		});
+
+		it("maps mouse clicks on repeated masks to the underlying grapheme", () => {
+			const input = new Input({ mask: "**" });
+			input.handleInput("a\u0301bc");
+			input.render(20);
+			input.handleMouse({
+				type: "press",
+				button: "left",
+				x: 4,
+				y: 0,
+				screenX: 4,
+				screenY: 0,
+				width: 20,
+				height: 1,
+				shift: false,
+				alt: false,
+				ctrl: false,
+			});
+			input.handleInput("x");
+			assert.strictEqual(input.getValue(), "a\u0301xbc");
 		});
 
 		it("does not overflow with wide CJK and fullwidth text", () => {

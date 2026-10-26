@@ -1,4 +1,4 @@
-import { ModelThinkingLevelSchema } from "@earendil-works/pi-ai/providers/model-schema";
+import { ModelThinkingLevelSchema } from "@no-mistakes/ai/providers/model-schema";
 import { type Static, type TSchemaOptions, Type } from "typebox";
 import { SETTINGS_DEFAULTS } from "./settings-defaults.ts";
 
@@ -284,12 +284,6 @@ export const SettingsSchema = Type.Object(
 				default: SETTINGS_DEFAULTS.collapseChangelog,
 			}),
 		),
-		enableInstallTelemetry: Type.Optional(
-			Type.Boolean({
-				description: "Send an anonymous version and update ping after changelog-detected updates.",
-				default: SETTINGS_DEFAULTS.enableInstallTelemetry,
-			}),
-		),
 		enableAnalytics: Type.Optional(
 			Type.Boolean({
 				description: "Opt in to analytics data sharing.",
@@ -392,7 +386,9 @@ export const SettingsSchema = Type.Object(
 			}),
 		),
 		httpProxy: Type.Optional(
-			Type.String({ description: "Proxy URL applied as HTTP_PROXY and HTTPS_PROXY for Pi-managed HTTP clients." }),
+			Type.String({
+				description: "Proxy URL applied as HTTP_PROXY and HTTPS_PROXY for no-mistakes-managed HTTP clients.",
+			}),
 		),
 		httpIdleTimeoutMs: Type.Optional(
 			timeoutSetting({

@@ -87,7 +87,21 @@ async function main(): Promise<void> {
 	if (!command || command === "help" || command === "--help" || command === "-h") {
 		const providerList = PROVIDERS.map((provider) => `  ${provider.id.padEnd(20)} ${provider.name}`).join("\n");
 		console.log(
-			`Usage: npx @earendil-works/pi-ai <command> [provider]\n\nCommands:\n  login [provider]  Login to an OAuth provider\n  list              List available providers\n\nProviders:\n${providerList}`,
+			`no-mistakes-ai
+Stop telling your agent to "make no mistakes." Now it's built-in.
+
+Usage:
+  npx @no-mistakes/ai <command> [provider]
+
+Commands:
+  login [provider]  Sign in to an OAuth provider
+  list              List available providers
+
+Credentials are saved to auth.json in the current directory.
+For coding-agent setup without environment variables, run: no-mistakes auth login
+
+Providers:
+${providerList}`,
 		);
 		return;
 	}

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Release script for pi-mono
+ * Release script for no-mistakes
  *
  * Usage:
  *   node scripts/release.mjs <major|minor|patch>
@@ -17,7 +17,7 @@
  * 7. Commit and tag the release
  * 8. Add new [Unreleased] section to changelogs
  * 9. Commit next-cycle changelog updates
- * 10. Push main and the tag to trigger CI publication and verified pi.dev announcement
+ * 10. Push main and the tag to trigger GitHub Release and npm publication
  */
 
 import { execSync, spawnSync } from "node:child_process";
@@ -299,10 +299,10 @@ console.log("Building packages for tests...");
 run("npm run build:offline");
 console.log();
 
-// PI_RELEASE_SKIP_TESTS=1 skips the test suite, e.g. when it already passed in `npm run release:local`
+// NO_MISTAKES_RELEASE_SKIP_TESTS=1 skips the test suite, e.g. when it already passed in `npm run release:local`
 // and an overloaded machine makes timing-sensitive tests fail. Checks and the install check still run.
-if (process.env.PI_RELEASE_SKIP_TESTS === "1") {
-	console.log("Skipping tests (PI_RELEASE_SKIP_TESTS=1)\n");
+if (process.env.NO_MISTAKES_RELEASE_SKIP_TESTS === "1") {
+	console.log("Skipping tests (NO_MISTAKES_RELEASE_SKIP_TESTS=1)\n");
 } else {
 	console.log("Running tests...");
 	run("./test.sh");
@@ -337,4 +337,4 @@ run("git push origin main");
 run(`git push origin v${version}`);
 console.log();
 
-console.log(`=== Prepared release v${version}; CI publication and pi.dev announcement start after the tag push ===`);
+console.log(`=== Prepared release v${version}; GitHub Release and npm publication start after the tag push ===`);

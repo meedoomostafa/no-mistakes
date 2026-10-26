@@ -24,6 +24,8 @@ export interface InputOptions {
 	prompt?: string;
 	placeholder?: string;
 	placeholderStyle?: (text: string) => string;
+	/** Replaces each entered grapheme in rendered output while preserving the underlying value. */
+	mask?: string;
 }
 
 /**
@@ -35,6 +37,7 @@ export class Input implements Component, Focusable {
 	private readonly prompt: string;
 	private readonly placeholder: string;
 	private readonly placeholderStyle: (text: string) => string;
+	private mask?: string;
 	private renderedStartColumn = 0;
 	public onSubmit?: (value: string) => void;
 	public onEscape?: () => void;
@@ -57,6 +60,7 @@ export class Input implements Component, Focusable {
 		this.prompt = options.prompt ?? "> ";
 		this.placeholder = options.placeholder ?? "";
 		this.placeholderStyle = options.placeholderStyle ?? ((text) => text);
+		this.mask = options.mask;
 	}
 
 	getValue(): string {
@@ -66,6 +70,29 @@ export class Input implements Component, Focusable {
 	setValue(value: string): void {
 		this.value = value;
 		this.cursor = Math.min(this.cursor, value.length);
+	}
+
+	/** Clear the value and editing history before reusing the input for another prompt. */
+	reset(): void {
+		this.value = "";
+		this.cursor = 0;
+		this.undoStack = new UndoStack<InputState>();
+		this.killRing = new KillRing();
+		this.lastAction = null;
+		this.pasteBuffer = "";
+		this.isInPaste = false;
+		this.renderedStartColumn = 0;
+	}
+
+	setMask(mask: string | undefined): void {
+		this.mask = mask;
+	}
+
+	private displayValue(): { text: string; cursor: number } {
+		if (!this.mask) return { text: this.value, cursor: this.cursor };
+		const graphemes = [...segmenter.segment(this.value)];
+		const cursor = [...segmenter.segment(this.value.slice(0, this.cursor))].length * this.mask.length;
+		return { text: this.mask.repeat(graphemes.length), cursor };
 	}
 
 	handleInput(data: string): void {
@@ -235,12 +262,12 @@ export class Input implements Component, Focusable {
 
 	handleMouse(event: TuiMouseEvent): TuiMouseEventResult | undefined {
 		if (event.type !== "press" || event.button !== "left" || event.y !== 0) return undefined;
-		const visibleColumn = Math.max(0, event.x - 2);
+		const visibleColumn = Math.max(0, event.x - visibleWidth(this.prompt));
 		const targetColumn = this.renderedStartColumn + visibleColumn;
 		let currentColumn = 0;
 		this.cursor = this.value.length;
 		for (const grapheme of segmenter.segment(this.value)) {
-			const nextColumn = currentColumn + visibleWidth(grapheme.segment);
+			const nextColumn = currentColumn + visibleWidth(this.mask || grapheme.segment);
 			if (targetColumn < nextColumn) {
 				this.cursor = grapheme.index;
 				break;
@@ -436,19 +463,20 @@ export class Input implements Component, Focusable {
 			return [this.prompt + textWithCursor + padding];
 		}
 
+		const display = this.displayValue();
 		let visibleText = "";
-		let cursorDisplay = this.cursor;
+		let cursorDisplay = display.cursor;
 		this.renderedStartColumn = 0;
-		const totalWidth = visibleWidth(this.value);
+		const totalWidth = visibleWidth(display.text);
 
 		if (totalWidth < availableWidth) {
 			// Everything fits (leave room for cursor at end)
-			visibleText = this.value;
+			visibleText = display.text;
 		} else {
 			// Need horizontal scrolling
 			// Reserve one column for cursor if it's at the end
-			const scrollWidth = this.cursor === this.value.length ? availableWidth - 1 : availableWidth;
-			const cursorCol = visibleWidth(this.value.slice(0, this.cursor));
+			const scrollWidth = display.cursor === display.text.length ? availableWidth - 1 : availableWidth;
+			const cursorCol = visibleWidth(display.text.slice(0, display.cursor));
 
 			if (scrollWidth > 0) {
 				const halfWidth = Math.floor(scrollWidth / 2);
@@ -466,8 +494,8 @@ export class Input implements Component, Focusable {
 				}
 
 				this.renderedStartColumn = startCol;
-				visibleText = sliceByColumn(this.value, startCol, scrollWidth, true);
-				const beforeCursor = sliceByColumn(this.value, startCol, Math.max(0, cursorCol - startCol), true);
+				visibleText = sliceByColumn(display.text, startCol, scrollWidth, true);
+				const beforeCursor = sliceByColumn(display.text, startCol, Math.max(0, cursorCol - startCol), true);
 				cursorDisplay = beforeCursor.length;
 			} else {
 				visibleText = "";

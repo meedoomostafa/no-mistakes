@@ -1,6 +1,6 @@
-import { type Context, type JsonValue, Watch, type WatchHandle } from "@earendil-works/chord";
-import { withoutAbortSignal } from "@earendil-works/chord/context";
-import { applyImmutable, type NonEmptyPath, type Op, type Path } from "@earendil-works/chord/delta";
+import { type Context, type JsonValue, Watch, type WatchHandle } from "@no-mistakes/chord";
+import { withoutAbortSignal } from "@no-mistakes/chord/context";
+import { applyImmutable, type NonEmptyPath, type Op, type Path } from "@no-mistakes/chord/delta";
 import { contained, type ObservedCommit, type SessionImpl } from "../session/session.ts";
 import type {
 	ConversationDocToken,

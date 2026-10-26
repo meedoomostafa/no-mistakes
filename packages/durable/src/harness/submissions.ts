@@ -1,11 +1,11 @@
-import { type Context, copyJson, type JsonRepresentation } from "@earendil-works/chord";
-import { withTelemetry } from "@earendil-works/chord/context";
+import { type Context, copyJson, type JsonRepresentation } from "@no-mistakes/chord";
+import { withTelemetry } from "@no-mistakes/chord/context";
 import {
 	createTypedSpanStarter,
 	NOOP_TELEMETRY_CONTEXT,
 	type TelemetryContext,
 	type TelemetrySpan,
-} from "@earendil-works/pi-telemetry";
+} from "@no-mistakes/telemetry";
 import { ConversationBusy } from "../errors.ts";
 import type { ObservedCommit, SessionImpl } from "../session/session.ts";
 import type { ConversationId, JsonObject, Storage, SubmissionId, SubmissionRecord, Tx } from "../types.ts";

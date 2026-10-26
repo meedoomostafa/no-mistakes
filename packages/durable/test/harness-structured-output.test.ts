@@ -1,7 +1,6 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { JsonValue } from "@earendil-works/chord";
 import {
 	type AssistantMessage,
 	fauxAssistantMessage,
@@ -9,7 +8,8 @@ import {
 	fauxToolCall,
 	type ToolResultMessage,
 	Type,
-} from "@earendil-works/pi-ai";
+} from "@no-mistakes/ai";
+import type { JsonValue } from "@no-mistakes/chord";
 import {
 	defineTool,
 	MemoryStorage,
@@ -21,7 +21,7 @@ import {
 	ToolResultEntry,
 	ToolTask,
 	watchEvents,
-} from "@earendil-works/pi-durable";
+} from "@no-mistakes/durable";
 import { describe, expect, it } from "vitest";
 import { NodeExecutionEnv } from "../src/env/node.ts";
 import { createBashTool } from "../src/tools/index.ts";

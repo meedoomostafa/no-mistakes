@@ -7,7 +7,7 @@
  * tool listings): a nested durable call with its own task, live row, abort, usage accounting, and replay policy. The
  * code mode tool turns a script's call of the global into a call of that tool.
  */
-import type { Context, JsonValue } from "@earendil-works/chord";
+
 import type {
 	AnyModel,
 	ClassifierContext,
@@ -16,7 +16,8 @@ import type {
 	ModelType,
 	ModelTypeMap,
 	Usage,
-} from "@earendil-works/pi-ai";
+} from "@no-mistakes/ai";
+import type { Context, JsonValue } from "@no-mistakes/chord";
 import { Type } from "typebox";
 import { defineTool } from "../harness/define.ts";
 import type { ToolRegistration } from "../harness/types.ts";

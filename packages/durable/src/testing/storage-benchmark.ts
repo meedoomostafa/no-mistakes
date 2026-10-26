@@ -1,5 +1,5 @@
-import type { JsonValue } from "@earendil-works/chord";
-import { BACKGROUND_CONTEXT } from "@earendil-works/chord/context";
+import type { JsonValue } from "@no-mistakes/chord";
+import { BACKGROUND_CONTEXT } from "@no-mistakes/chord/context";
 import type {
 	ConversationId,
 	DocumentCreate,

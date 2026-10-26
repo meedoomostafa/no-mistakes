@@ -1,4 +1,4 @@
-import { setKeybindings, type TUI } from "@earendil-works/pi-tui";
+import { setKeybindings, type TUI } from "@no-mistakes/tui";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { KeybindingsManager } from "../src/core/keybindings.ts";
 import { LoginDialogComponent } from "../src/modes/interactive/components/login-dialog.ts";
@@ -30,6 +30,41 @@ describe("device-code login", () => {
 		vi.resetAllMocks();
 		vi.mocked(copyToClipboard).mockResolvedValue(undefined);
 		setKeybindings(new KeybindingsManager());
+	});
+
+	it("masks secret input in the dialog and transcript", async () => {
+		const { dialog } = createDialog();
+		const answer = dialog.showSecretPrompt("API key");
+		for (const character of "secret") dialog.handleInput(character);
+
+		expect(render(dialog)).not.toContain("secret");
+		expect(render(dialog)).toContain("••••••");
+
+		dialog.handleInput("\r");
+		await expect(answer).resolves.toBe("secret");
+		expect(render(dialog)).not.toContain("secret");
+		expect(render(dialog)).toContain("••••••");
+	});
+
+	it.each(["undo", "yank"])("does not reveal previous secrets through %s in a later prompt", async (restore) => {
+		const { dialog } = createDialog();
+		const secret = dialog.showSecretPrompt("API key");
+		for (const character of "test-only-secret") dialog.handleInput(character);
+		dialog.handleInput("\x15"); // Save the secret in the kill ring.
+		dialog.handleInput("\x19");
+		dialog.handleInput("\r");
+		await expect(secret).resolves.toBe("test-only-secret");
+
+		const next = dialog.showPrompt("Account name");
+		if (restore === "undo") {
+			dialog.handleInput("\x1b[45;5u");
+			dialog.handleInput("\x1b[45;5u");
+		} else {
+			dialog.handleInput("\x19");
+		}
+		expect(render(dialog)).not.toContain("test-only-secret");
+		dialog.handleInput("\r");
+		await expect(next).resolves.toBe("");
 	});
 
 	it("opens the verification page and copies the code once after confirmation", async () => {

@@ -1,4 +1,4 @@
-import { copyJson, type Draft } from "@earendil-works/chord";
+import { copyJson, type Draft } from "@no-mistakes/chord";
 import { defineDoc } from "../documents.ts";
 import { documentRetention, persistWithin } from "../session/session.ts";
 import type { ConversationId, ConversationRecord, Tx } from "../types.ts";

@@ -10,8 +10,8 @@ describeEval("Answer a basic prompt", { harness }, (it) => {
 		expect(result.output.trim()).toBe("Paris");
 		expect(result.errors).toEqual([]);
 		expect(result.usage).toMatchObject({
-			provider: process.env.PI_PROVIDER,
-			model: process.env.PI_MODEL,
+			provider: process.env.NO_MISTAKES_PROVIDER,
+			model: process.env.NO_MISTAKES_MODEL,
 		});
 		expect(result.usage.totalTokens).toBeGreaterThan(0);
 	});
